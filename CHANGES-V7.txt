@@ -1,0 +1,9 @@
+V7 changes
+
+- Changed Market Assigner / وەسڵ دانەر access code to 1803223.
+- Once the correct code is entered on a browser/device, that authorization is remembered locally.
+- After that, switching General -> Market Assigner no longer asks for the code again on that same browser/device.
+- Market assignment input now accepts numbers only and requests the numeric keyboard on mobile.
+- Adding a market now requires an exact market number; name-based adding is disabled for the assignment field.
+- General search remains unchanged and still supports market number or name.
+- Supabase/database structure is unchanged.
