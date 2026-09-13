@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d3455">
+<title>Warehouse Map</title>
+<style>
+:root{
+  --navy:#0c3150;--navy2:#0a2944;--blue:#1878f2;--blue2:#0d64d8;--bg:#eef5fa;--panel:#fff;
+  --text:#14263a;--muted:#6b7c8f;--line:#d9e4ed;--soft:#f4f8fb;--green:#33c66a;--greenBg:#dff8e9;
+  --red:#ff4658;--redBg:#ffe6e9;--amber:#f5b735;--amberBg:#fff2c9;--shadow:0 10px 30px rgba(16,50,80,.10);
+  --radius:18px;--safe:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box} html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);background:var(--bg)}
+button,input,textarea,select{font:inherit} button{cursor:pointer} .hidden{display:none!important}
+.app{min-height:100vh;padding-bottom:82px}.topbar{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,var(--navy),#0d456f);color:#fff;padding:16px 18px 14px;box-shadow:0 4px 20px rgba(8,38,63,.18)}
+.toprow{max-width:1180px;margin:auto;display:flex;align-items:center;gap:12px}.brandicon{width:44px;height:44px;border-radius:14px;background:#1487ff;display:grid;place-items:center;font-size:23px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.brand{min-width:0;flex:1}.brand h1{margin:0;font-size:22px;line-height:1.1}.brand p{margin:4px 0 0;color:#c8e0f3;font-size:12px}.gear{width:42px;height:42px;border:0;border-radius:13px;background:rgba(255,255,255,.11);color:white;font-size:20px}
+.live{max-width:1180px;margin:10px auto 0;display:flex;gap:7px;align-items:center;flex-wrap:wrap;font-size:11px;color:#d9ebf8}.dot{width:8px;height:8px;border-radius:50%;background:#ff6674}.dot.on{background:#55df8b}.pill{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.10)}
+main{max-width:1180px;margin:0 auto;padding:14px}.page{display:none}.page.active{display:block}.pageTitle{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:4px 2px 14px}.pageTitle h2{margin:0;font-size:24px}.pageTitle p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.zoneTabs{display:flex;gap:8px;overflow-x:auto;padding:10px;scrollbar-width:none}.zoneTabs::-webkit-scrollbar{display:none}.zoneTab{min-width:72px;border:1px solid var(--line);background:#f7fafc;border-radius:12px;padding:10px 12px;color:var(--text);font-weight:800}.zoneTab small{display:block;font-size:10px;color:var(--muted);font-weight:600;margin-top:3px}.zoneTab.active{background:var(--blue);border-color:var(--blue);color:#fff}.zoneTab.active small{color:#dcecff}
+.mapCard{margin-top:12px;padding:14px}.mapHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.mapHead h3{font-size:22px;margin:0}.mapHead span{font-weight:800;color:var(--muted)}
+.gridWrap{overflow:auto;padding:2px 2px 8px}.grid{display:grid;gap:10px;min-width:max-content}.cell{width:116px;height:112px;border:1px solid #c9d8e5;border-radius:13px;background:#edf3f7;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8px;position:relative;transition:.12s transform,.12s box-shadow,.12s border}.cell:active{transform:scale(.98)}.cell .num{font-size:18px;font-weight:900}.cell .code{font-size:14px;font-weight:900;margin-top:9px}.cell .name{font-size:11px;margin-top:2px;max-width:98px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cell.empty .name{font-size:13px;color:var(--muted);margin-top:12px}.cell.filled{background:var(--greenBg);border-color:#7bdca1}.cell.selected{border:3px solid var(--blue);box-shadow:0 0 0 4px rgba(24,120,242,.14)}.cell.highlight{animation:pulse 1s ease 3}.cell.conflict{background:var(--amberBg);border-color:#e7b83f}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(24,120,242,.25)}}
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:12px 2px 0;color:var(--muted);font-size:12px}.key{display:flex;gap:6px;align-items:center}.sw{width:14px;height:14px;border-radius:4px;border:1px solid #cbd8e3}.sw.f{background:var(--greenBg);border-color:#69d895}.sw.e{background:#edf3f7}.sw.s{background:#d9ebff;border:2px solid var(--blue)}
+.actionbar{position:sticky;bottom:78px;z-index:12;margin:14px 0 0;background:rgba(238,245,250,.94);backdrop-filter:blur(10px);padding:10px;border-radius:16px;display:flex;gap:10px;border:1px solid var(--line)}.btn{border:0;border-radius:12px;padding:13px 16px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn.primary{background:var(--blue);color:#fff}.btn.primary:hover{background:var(--blue2)}.btn.danger{background:var(--red);color:#fff}.btn.soft{background:#edf3f7;color:var(--text)}.btn.outline{background:#fff;border:1px solid var(--line);color:var(--text)}.actionbar .btn{flex:1}.btn:disabled{opacity:.45;cursor:not-allowed}
+.searchCard{padding:14px}.searchbox{display:flex;align-items:center;gap:10px;border:2px solid #b9d8fb;border-radius:14px;padding:4px 10px;background:#fff}.searchbox .mag{font-size:22px;color:var(--blue)}.searchbox input{flex:1;border:0;outline:0;padding:12px 2px;font-size:18px;font-weight:700;color:var(--text);min-width:0}.clearSearch{border:0;background:transparent;color:var(--blue);font-size:22px}.resultHero{margin-top:14px;border:1px solid #bcefd1;background:linear-gradient(180deg,#ecfff4,#f8fffb);border-radius:16px;padding:14px}.marketTop{display:flex;align-items:center;gap:12px}.marketIcon{width:50px;height:50px;border-radius:14px;background:var(--green);color:#fff;display:grid;place-items:center;font-size:26px}.marketTop h3{margin:0;font-size:24px}.marketTop p{margin:3px 0 0;font-weight:700}.detailRows{margin:14px 0;background:#fff;border:1px solid #dceae2;border-radius:13px;padding:10px 12px}.drow{display:flex;gap:12px;align-items:flex-start;padding:7px 0}.drow b{min-width:95px}.drow span{color:var(--muted)}.locchips{display:flex;gap:6px;flex-wrap:wrap}.chip{background:#dfeeff;color:#1265c7;border-radius:8px;padding:5px 8px;font-weight:800;font-size:12px}
+.sectionLabel{font-size:15px;margin:18px 2px 8px}.searchResults{display:flex;flex-direction:column;gap:8px}.resultRow,.placedRow{border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center}.resultRow{cursor:pointer}.miniIcon{width:42px;height:42px;border-radius:12px;background:#e8f3ff;color:var(--blue);display:grid;place-items:center;flex:0 0 auto}.rowMain{min-width:0;flex:1}.rowMain b{display:block}.rowMain small{display:block;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.arrow{color:#7b91a5;font-size:24px;flex:0 0 auto}.placedRow{padding:14px 16px;min-height:88px;box-shadow:0 3px 12px rgba(16,50,80,.04);cursor:pointer}.placedRow .miniIcon{width:48px;height:48px;border-radius:14px;background:#ddf7e8;color:#20a457;font-size:22px}.placedInfo{min-width:0;flex:1}.placedName{font-size:20px;line-height:1.18;font-weight:900;color:#0d2845;white-space:normal;overflow-wrap:anywhere}.placedCode{margin-top:5px;font-size:12px;font-weight:800;color:#7a8ca0;letter-spacing:.2px}.placedAddress{margin-top:3px;font-size:11px;color:#92a0ad;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.placedLocations{display:flex;gap:7px;justify-content:flex-end;align-items:stretch;flex-wrap:wrap;max-width:48%}.placeBadge{display:flex;overflow:hidden;border-radius:12px;border:1px solid #d6e8f8;min-height:58px;background:#fff;box-shadow:0 2px 8px rgba(20,80,130,.05)}.placePart{min-width:57px;padding:5px 9px;display:flex;flex-direction:column;align-items:center;justify-content:center}.placePart+.placePart{border-left:1px solid #d8e5ee}.placePart.zone{background:#e7f2ff;color:#0a69df}.placePart.cell{background:#e9faef;color:#15a85b}.placeLabel{font-size:9px;font-weight:800;opacity:.78;text-transform:uppercase;letter-spacing:.35px}.placeValue{font-size:25px;line-height:1;font-weight:950;margin-top:2px;white-space:nowrap}.placePart.cell .placeValue{font-size:22px}.emptyState{text-align:center;padding:36px 16px;color:var(--muted)}.emptyState .big{font-size:40px;margin-bottom:8px}.placedSearch{margin-bottom:12px}.placedList{display:flex;flex-direction:column;gap:10px}
+.bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.97);border-top:1px solid var(--line);padding:8px 10px calc(8px + var(--safe));display:grid;grid-template-columns:repeat(3,1fr);gap:6px;box-shadow:0 -8px 24px rgba(16,50,80,.08)}.navbtn{border:0;background:transparent;border-radius:12px;padding:7px 4px;color:#6d8194;font-size:11px;font-weight:800}.navbtn span{display:block;font-size:21px;margin-bottom:2px}.navbtn.active{background:#e7f1ff;color:var(--blue)}
+.modalBg{position:fixed;inset:0;z-index:50;background:rgba(6,25,41,.58);display:none;align-items:flex-end;justify-content:center;padding-top:40px}.modalBg.show{display:flex}.modal{width:100%;max-width:620px;background:#fff;border-radius:22px 22px 0 0;max-height:88vh;overflow:auto;padding:18px;box-shadow:0 -20px 50px rgba(0,0,0,.2)}.modalHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.modalHead h3{margin:0;font-size:19px}.xbtn{border:0;background:#eef3f7;width:35px;height:35px;border-radius:10px;font-size:18px}.field{margin:12px 0}.field label{display:block;font-size:12px;font-weight:800;margin-bottom:6px;color:#52687c}.field input,.field select{width:100%;border:1px solid #cfdde8;border-radius:12px;padding:12px 13px;outline:0;background:#fff}.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,120,242,.1)}.matchBox{background:#ecfff4;border:1px solid #b7eacb;border-radius:13px;padding:12px;margin:10px 0}.selSummary{font-size:13px;color:#52687c;margin:10px 0}.modalBtns{display:flex;gap:10px;margin-top:14px}.modalBtns .btn{flex:1}.warn{background:var(--redBg);border:1px solid #ffc2c9;color:#b52736;border-radius:13px;padding:12px;font-weight:700}.suggestions{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:8px;max-height:220px;overflow-y:auto}.suggestion{padding:10px 12px;border-bottom:1px solid #edf1f4;cursor:pointer}.suggestion:last-child{border-bottom:0}.suggestion:hover{background:#f3f8fc}.suggestion b{display:block}.suggestion small{color:var(--muted)}
+.settingsList{display:flex;flex-direction:column;gap:8px}.settingRow{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px}.settingRow b{width:30px}.settingRow span{flex:1;color:var(--muted);font-size:13px}.tiny{padding:8px 10px;border-radius:9px;border:0;background:var(--blue);color:white;font-weight:800}.dangerTiny{background:var(--red)}.subtle{font-size:12px;color:var(--muted)}.toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-20px);opacity:0;z-index:100;background:#122a40;color:#fff;border-radius:999px;padding:10px 16px;box-shadow:var(--shadow);pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:760px){.app{padding-bottom:0}.topbar{position:static}.bottomNav{position:sticky;top:0;bottom:auto;max-width:1180px;margin:12px auto 0;border:1px solid var(--line);border-radius:16px;padding:7px}.navbtn{font-size:12px}.navbtn span{display:inline;font-size:16px;margin-right:6px}.actionbar{bottom:12px}.modalBg{align-items:center;padding:20px}.modal{border-radius:22px;max-height:86vh}.grid{min-width:0}.cell{width:auto;min-width:95px}}
+@media(max-width:430px){.brand h1{font-size:19px}.brand p{font-size:11px}.pageTitle h2{font-size:21px}.cell{width:104px;height:102px}.actionbar .btn{padding:12px 8px;font-size:12px}.placedRow{padding:12px 10px;gap:9px;min-height:82px}.placedRow .miniIcon{width:42px;height:42px;border-radius:12px}.placedName{font-size:17px}.placedCode{font-size:11px}.placedAddress{display:none}.placedLocations{max-width:46%;gap:5px}.placeBadge{min-height:54px;border-radius:10px}.placePart{min-width:45px;padding:4px 6px}.placeLabel{font-size:8px}.placeValue{font-size:22px}.placePart.cell .placeValue{font-size:19px}.arrow{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="toprow">
+    <div class="brandicon">⬡</div>
+    <div class="brand"><h1>Warehouse Map</h1><p>Organize today • ship faster</p></div>
+    <button class="gear" id="openSettings" aria-label="Zone settings">⚙</button>
+  </div>
+  <div class="live"><span class="dot" id="liveDot"></span><span id="liveText">Connecting…</span><span class="pill" id="clientsPill">0 devices</span><span class="pill" id="revisionPill">rev 0</span></div>
+</header>
+<nav class="bottomNav">
+  <button class="navbtn active" data-page="map"><span>▦</span>Warehouse Map</button>
+  <button class="navbtn" data-page="find"><span>⌕</span>Find Market</button>
+  <button class="navbtn" data-page="placed"><span>☷</span>Placed Markets</button>
+</nav>
+<main>
+<section class="page active" id="page-map">
+  <div class="pageTitle"><div><h2>Warehouse Map</h2><p>Tap one or more cells, then assign or remove a market.</p></div></div>
+  <div class="card zoneTabs" id="zoneTabs"></div>
+  <div class="card mapCard">
+    <div class="mapHead"><h3 id="zoneTitle">Zone A</h3><span id="zoneCellCount">0 cells</span></div>
+    <div class="gridWrap"><div class="grid" id="zoneGrid"></div></div>
+    <div class="legend"><div class="key"><span class="sw f"></span>Filled</div><div class="key"><span class="sw e"></span>Empty</div><div class="key"><span class="sw s"></span>Selected</div></div>
+  </div>
+  <div class="actionbar">
+    <button class="btn primary" id="assignSelected" disabled>⌂ Assign to Selected</button>
+    <button class="btn danger" id="removeSelected" disabled>🗑 Remove Selected</button>
+  </div>
+</section>
+<section class="page" id="page-find">
+  <div class="pageTitle"><div><h2>Find Market</h2><p>Search by market code or name and see the exact zone and cells.</p></div></div>
+  <div class="card searchCard">
+    <div class="searchbox"><span class="mag">⌕</span><input id="findInput" autocomplete="off" placeholder="Enter market code or name"><button class="clearSearch" id="clearFind">×</button></div>
+    <div id="findHero"></div>
+    <h3 class="sectionLabel">Results</h3><div class="searchResults" id="findResults"></div>
+  </div>
+</section>
+<section class="page" id="page-placed">
+  <div class="pageTitle"><div><h2>Placed Markets</h2><p>Every market that currently has items in the warehouse.</p></div></div>
+  <div class="searchbox placedSearch"><span class="mag">⌕</span><input id="placedInput" autocomplete="off" placeholder="Search market code or name"><button class="clearSearch" id="clearPlaced">×</button></div>
+  <div class="placedList" id="placedList"></div>
+</section>
+</main>
+</div>
+
+<div class="modalBg" id="assignModal"><div class="modal"><div class="modalHead"><h3 id="assignTitle">Assign Market</h3><button class="xbtn" data-close="assignModal">×</button></div><div class="field"><label>Market code or name</label><input id="assignInput" autocomplete="off" placeholder="e.g. 121213"></div><div id="assignSuggestions"></div><div id="assignMatch"></div><div class="selSummary" id="assignCells"></div><div class="modalBtns"><button class="btn soft" data-close="assignModal">Cancel</button><button class="btn primary" id="confirmAssign" disabled>✓ Assign</button></div></div></div>
+<div class="modalBg" id="removeModal"><div class="modal"><div class="modalHead"><h3 id="removeTitle">Remove Market</h3><button class="xbtn" data-close="removeModal">×</button></div><div class="warn">Remove market assignments from the selected cells? This will make those cells empty.</div><div class="selSummary" id="removeCells"></div><div class="modalBtns"><button class="btn soft" data-close="removeModal">Cancel</button><button class="btn danger" id="confirmRemove">🗑 Remove</button></div></div></div>
+<div class="modalBg" id="detailModal"><div class="modal"><div class="modalHead"><h3>Market Information</h3><button class="xbtn" data-close="detailModal">×</button></div><div id="detailBody"></div><div class="modalBtns"><button class="btn primary" id="detailShowMap">▦ Show on Map</button><button class="btn soft" data-close="detailModal">Close</button></div></div></div>
+<div class="modalBg" id="settingsModal"><div class="modal"><div class="modalHead"><h3>Zone Settings</h3><button class="xbtn" data-close="settingsModal">×</button></div><p class="subtle">Configure the physical zones. Everyone connected to this online database will see the same layout live.</p><div class="settingsList" id="settingsList"></div><div class="modalBtns"><button class="btn soft" data-close="settingsModal">Close</button><button class="btn primary" id="addZone">＋ Add New Zone</button></div></div></div>
+<div class="modalBg" id="zoneEditModal"><div class="modal"><div class="modalHead"><h3 id="zoneEditTitle">Edit Zone</h3><button class="xbtn" data-close="zoneEditModal">×</button></div><div class="field"><label>Zone name</label><input id="zoneName" maxlength="20"></div><div class="field"><label>Rows</label><input id="zoneRows" type="number" min="1" max="20"></div><div class="field"><label>Cells per row</label><input id="zoneCols" type="number" min="1" max="50"></div><div class="modalBtns"><button class="btn danger" id="deleteZone">Delete</button><button class="btn primary" id="saveZone">Save Zone</button></div></div></div>
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
+<script>
+'use strict';
+let state={zones:[],assignments:{},colors:{}}; let markets=[]; let revision=0; let clients=0; let activeZoneId=null; let selected=new Set(); let selectedMarket=null; let detailMarket=null; let editZoneId=null;
+const $=id=>document.getElementById(id); let db=null; let liveChannel=null; let presenceKey='device-'+Math.random().toString(36).slice(2)+'-'+Date.now();
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function norm(s){const ar='٠١٢٣٤٥٦٧٨٩',fa='۰۱۲۳۴۵۶۷۸۹';return String(s||'').replace(/[\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF]/g,'').split('').map(c=>{let i=ar.indexOf(c);if(i>-1)return String(i);i=fa.indexOf(c);return i>-1?String(i):c}).join('').trim()}
+function keyFor(m){return (m.code?'c:'+m.code:'n:'+m.name).toLowerCase()}
+function marketForAssignment(a){if(!a)return null;return markets.find(m=>a.code&&m.code===a.code)||markets.find(m=>m.name.toLowerCase()===String(a.name||'').toLowerCase())||{code:a.code||'',name:a.name||'',address:''}}
+function findMarket(q){q=norm(q).toLowerCase();if(!q)return[];let exact=markets.filter(m=>String(m.code).toLowerCase()===q||m.name.toLowerCase()===q);let rest=markets.filter(m=>!exact.includes(m)&&(String(m.code).toLowerCase().includes(q)||m.name.toLowerCase().includes(q)));return [...exact,...rest].slice(0,30)}
+function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(showToast._t);showToast._t=setTimeout(()=>t.classList.remove('show'),2200)}
+function openModal(id){$(id).classList.add('show')} function closeModal(id){$(id).classList.remove('show')}
+document.addEventListener('click',e=>{const c=e.target.closest('[data-close]');if(c)closeModal(c.dataset.close)});document.querySelectorAll('.modalBg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+function locationMapFor(code,name){const out={};for(const [cid,a] of Object.entries(state.assignments)){if((code&&a.code===code)||(!code&&a.name===name)){const p=parseCell(cid);if(!p)continue;(out[p.zoneId]??=[]).push(cellNumber(p.zoneId,p.row,p.col))}}for(const z of Object.keys(out))out[z].sort((a,b)=>a-b);return out}
+function parseCell(id){const m=String(id).match(/^(.+)_r(\d+)_c(\d+)$/);return m?{zoneId:m[1],row:+m[2],col:+m[3]}:null}
+function zoneBy(id){return state.zones.find(z=>String(z.id)===String(id))}
+function cellNumber(zid,row,col){const z=zoneBy(zid);return z?row*z.cols+col+1:col+1}
+function cellId(zid,row,col){return `${zid}_r${row}_c${col}`}
+function chipsHtml(loc){const chunks=[];for(const z of state.zones){if(loc[z.id]?.length)chunks.push(`<span class="chip">${esc(z.name)}: ${loc[z.id].join(', ')}</span>`)}return chunks.join('')}
+function placedMarkets(){const map=new Map();for(const a of Object.values(state.assignments)){const k=(a.code?'c:'+a.code:'n:'+a.name).toLowerCase();if(!map.has(k))map.set(k,marketForAssignment(a))}return [...map.values()].sort((a,b)=>(a.code||a.name).localeCompare(b.code||b.name,undefined,{numeric:true}))}
+function switchPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+name));document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.page===name));if(name==='placed')renderPlaced();if(name==='find')renderFind();window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('.navbtn').forEach(b=>b.onclick=()=>switchPage(b.dataset.page));
+function renderAll(){if(!state.zones.length)return;if(!activeZoneId||!zoneBy(activeZoneId))activeZoneId=state.zones[0].id;renderTabs();renderMap();renderPlaced();renderFind();renderSettings();updateActions()}
+function renderTabs(){$('zoneTabs').innerHTML=state.zones.map(z=>`<button class="zoneTab ${z.id===activeZoneId?'active':''}" data-zone="${esc(z.id)}">${esc(z.name)}<small>${z.rows*z.cols} cells</small></button>`).join('');$('zoneTabs').querySelectorAll('[data-zone]').forEach(b=>b.onclick=()=>{activeZoneId=b.dataset.zone;selected.clear();renderTabs();renderMap();updateActions()})}
+function renderMap(highlights=[]){const z=zoneBy(activeZoneId);if(!z)return;$('zoneTitle').textContent='Zone '+z.name;$('zoneCellCount').textContent=`${z.rows*z.cols} cells`;const g=$('zoneGrid');g.style.gridTemplateColumns=(window.innerWidth<600?'repeat(3,minmax(92px,1fr))':`repeat(${z.cols}, minmax(95px, 1fr))`);let html='';for(let r=0;r<z.rows;r++)for(let c=0;c<z.cols;c++){const id=cellId(z.id,r,c),a=state.assignments[id],num=cellNumber(z.id,r,c),sel=selected.has(id),hi=highlights.includes(id);html+=`<button class="cell ${a?'filled':'empty'} ${sel?'selected':''} ${hi?'highlight':''}" data-cell="${esc(id)}"><span class="num">${num}</span>${a?`<span class="code">${esc(a.code||'—')}</span><span class="name">${esc(a.name)}</span>`:`<span class="name">Empty</span>`}</button>`}g.innerHTML=html;g.querySelectorAll('[data-cell]').forEach(b=>b.onclick=()=>{const id=b.dataset.cell;if(selected.has(id))selected.delete(id);else selected.add(id);b.classList.toggle('selected',selected.has(id));updateActions()})}
+function updateActions(){const n=selected.size;$('assignSelected').disabled=!n;$('removeSelected').disabled=!n||![...selected].some(id=>state.assignments[id]);$('assignSelected').textContent=n?`⌂ Assign to Selected (${n})`:'⌂ Assign to Selected';$('removeSelected').textContent=n?`🗑 Remove Selected (${n})`:'🗑 Remove Selected'}
+$('assignSelected').onclick=()=>{selectedMarket=null;$('assignInput').value='';$('assignSuggestions').innerHTML='';$('assignMatch').innerHTML='';$('confirmAssign').disabled=true;$('assignTitle').textContent=`Assign Market to ${selected.size} Cell${selected.size===1?'':'s'}`;$('assignCells').textContent='Selected cells: '+selectedLabel();openModal('assignModal');setTimeout(()=>$('assignInput').focus(),100)};
+function selectedLabel(){const groups={};for(const id of selected){const p=parseCell(id);if(!p)continue;(groups[p.zoneId]??=[]).push(cellNumber(p.zoneId,p.row,p.col))}return state.zones.filter(z=>groups[z.id]).map(z=>`${z.name}: ${groups[z.id].sort((a,b)=>a-b).join(', ')}`).join(' • ')}
+$('assignInput').addEventListener('input',()=>{const q=$('assignInput').value,res=findMarket(q);selectedMarket=null;$('confirmAssign').disabled=true;$('assignMatch').innerHTML='';if(!q.trim()){$('assignSuggestions').innerHTML='';return}const nq=norm(q).toLowerCase(),exact=res.find(m=>String(m.code).toLowerCase()===nq||m.name.toLowerCase()===nq);if(exact)pickAssignMarket(exact);$('assignSuggestions').innerHTML=res.slice(0,8).map((m,i)=>`<div class="suggestion" data-i="${i}"><b>${esc(m.code||'No code')} — ${esc(m.name)}</b><small>${esc(m.address||'')}</small></div>`).join('');$('assignSuggestions').className=res.length?'suggestions':'';$('assignSuggestions').querySelectorAll('[data-i]').forEach(el=>el.onclick=()=>pickAssignMarket(res[+el.dataset.i]))});
+function pickAssignMarket(m){selectedMarket=m;$('assignInput').value=m.code||m.name;$('assignMatch').innerHTML=`<div class="matchBox"><b>${esc(m.code||'No code')} — ${esc(m.name)}</b>${m.address?`<div class="subtle" style="margin-top:5px">${esc(m.address)}</div>`:''}</div>`;$('confirmAssign').disabled=false}
+async function saveState(message){try{if(!db)throw new Error('Supabase is not configured');const {data,error}=await db.rpc('save_warehouse_state',{p_state:state});if(error)throw error;revision=Number(data)||revision;updateLive();showToast(message)}catch(e){console.error(e);showToast(e.message||'Could not save');setTimeout(loadSnapshot,600)}}
+$('confirmAssign').onclick=()=>{if(!selectedMarket||!selected.size)return;for(const id of selected)state.assignments[id]={code:selectedMarket.code||'',name:selectedMarket.name};selected.clear();closeModal('assignModal');renderAll();saveState('Market assigned')};
+$('removeSelected').onclick=()=>{$('removeTitle').textContent=`Remove from ${selected.size} Cell${selected.size===1?'':'s'}`;$('removeCells').textContent='Selected cells: '+selectedLabel();openModal('removeModal')};
+$('confirmRemove').onclick=()=>{for(const id of selected)delete state.assignments[id];selected.clear();closeModal('removeModal');renderAll();saveState('Selected cells cleared')};
+function renderFind(){const q=$('findInput').value.trim(),res=findMarket(q);$('findHero').innerHTML='';if(!q){$('findResults').innerHTML='<div class="emptyState"><div class="big">⌕</div>Enter a market code or name to find its location.</div>';return}const placed=res.find(m=>Object.keys(locationMapFor(m.code,m.name)).length);if(placed){$('findHero').innerHTML=marketHero(placed);const hb=$('findHero').querySelector('.heroShowMap');if(hb)hb.onclick=()=>showMarketOnMap(hb.dataset.code,hb.dataset.name)}$('findResults').innerHTML=res.length?res.slice(0,20).map((m,i)=>{const loc=locationMapFor(m.code,m.name);return `<div class="resultRow" data-code="${esc(m.code)}" data-name="${esc(m.name)}"><div class="miniIcon">▣</div><div class="rowMain"><b>${esc(m.code||'No code')} — ${esc(m.name)}</b><small>${Object.keys(loc).length?'Placed in warehouse':esc(m.address||'Not currently placed')}</small></div><span class="arrow">›</span></div>`}).join(''):'<div class="emptyState">No matching market found.</div>';$('findResults').querySelectorAll('.resultRow').forEach(r=>r.onclick=()=>openDetails(markets.find(m=>m.code===r.dataset.code&&m.name===r.dataset.name)||{code:r.dataset.code,name:r.dataset.name,address:''}))}
+function marketHero(m){const loc=locationMapFor(m.code,m.name),count=Object.values(loc).reduce((a,v)=>a+v.length,0);return `<div class="resultHero"><div class="marketTop"><div class="marketIcon">▣</div><div><h3>${esc(m.code||'No code')}</h3><p>${esc(m.name)}</p></div></div><div class="detailRows"><div class="drow"><b>Total Cells</b><span>${count}</span></div><div class="drow"><b>Locations</b><div class="locchips">${chipsHtml(loc)||'<span>Not placed</span>'}</div></div><div class="drow"><b>Address</b><span>${esc(m.address||'—')}</span></div></div><button class="btn primary heroShowMap" style="width:100%" data-code="${esc(m.code)}" data-name="${esc(m.name)}">▦ Show on Map</button></div>`}
+$('findInput').oninput=renderFind;$('clearFind').onclick=()=>{$('findInput').value='';renderFind();$('findInput').focus()};
+function placedLocationHtml(loc){const blocks=[];for(const z of state.zones){const cells=loc[z.id];if(!cells?.length)continue;blocks.push(`<div class="placeBadge"><div class="placePart zone"><span class="placeLabel">Zone</span><span class="placeValue">${esc(z.name)}</span></div><div class="placePart cell"><span class="placeLabel">Cell${cells.length>1?'s':''}</span><span class="placeValue">${cells.join(', ')}</span></div></div>`)}return blocks.join('')}
+function renderPlaced(){const q=norm($('placedInput').value).toLowerCase(),list=placedMarkets().filter(m=>!q||String(m.code).toLowerCase().includes(q)||m.name.toLowerCase().includes(q));$('placedList').innerHTML=list.length?list.map(m=>{const loc=locationMapFor(m.code,m.name);return `<div class="placedRow" data-code="${esc(m.code)}" data-name="${esc(m.name)}"><div class="miniIcon">▣</div><div class="placedInfo"><div class="placedName">${esc(m.name)}</div><div class="placedCode">Code: ${esc(m.code||'No code')}</div>${m.address?`<div class="placedAddress">${esc(m.address)}</div>`:''}</div><div class="placedLocations">${placedLocationHtml(loc)}</div><span class="arrow">›</span></div>`}).join(''):'<div class="card emptyState"><div class="big">▦</div>No placed markets found.</div>';$('placedList').querySelectorAll('.placedRow').forEach(r=>r.onclick=()=>openDetails(markets.find(m=>m.code===r.dataset.code&&m.name===r.dataset.name)||{code:r.dataset.code,name:r.dataset.name,address:''}))}
+$('placedInput').oninput=renderPlaced;$('clearPlaced').onclick=()=>{$('placedInput').value='';renderPlaced();$('placedInput').focus()};
+function openDetails(m){detailMarket=m;const loc=locationMapFor(m.code,m.name),count=Object.values(loc).reduce((a,v)=>a+v.length,0);$('detailBody').innerHTML=`<div class="resultHero"><div class="marketTop"><div class="marketIcon">▣</div><div><h3>${esc(m.code||'No code')}</h3><p>${esc(m.name)}</p></div></div></div><div class="detailRows"><div class="drow"><b>Address</b><span>${esc(m.address||'—')}</span></div><div class="drow"><b>Total Cells</b><span>${count}</span></div><div class="drow"><b>Locations</b><div class="locchips">${chipsHtml(loc)||'<span>Not placed</span>'}</div></div></div>`;$('detailShowMap').disabled=!count;openModal('detailModal')}
+$('detailShowMap').onclick=()=>{if(detailMarket)showMarketOnMap(detailMarket.code,detailMarket.name);closeModal('detailModal')};
+window.showMarketOnMap=function(code,name){const loc=locationMapFor(code,name),first=state.zones.find(z=>loc[z.id]?.length);if(!first){showToast('This market is not currently placed');return}activeZoneId=first.id;selected.clear();switchPage('map');renderTabs();const ids=[];for(let r=0;r<first.rows;r++)for(let c=0;c<first.cols;c++){const id=cellId(first.id,r,c),a=state.assignments[id];if(a&&((code&&a.code===code)||(!code&&a.name===name)))ids.push(id)}renderMap(ids);updateActions();setTimeout(()=>document.querySelector('.cell.highlight')?.scrollIntoView({behavior:'smooth',block:'center',inline:'center'}),120)};
+$('openSettings').onclick=()=>{renderSettings();openModal('settingsModal')};
+function renderSettings(){$('settingsList').innerHTML=state.zones.map(z=>`<div class="settingRow"><b>${esc(z.name)}</b><span>${z.rows*z.cols} cells • ${z.rows} row${z.rows===1?'':'s'} × ${z.cols}</span><button class="tiny" data-edit="${esc(z.id)}">Edit</button></div>`).join('');$('settingsList').querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openZoneEditor(b.dataset.edit))}
+$('addZone').onclick=()=>openZoneEditor(null);
+function openZoneEditor(id){editZoneId=id;const z=id?zoneBy(id):null;$('zoneEditTitle').textContent=z?'Edit Zone':'Add New Zone';$('zoneName').value=z?.name||nextZoneName();$('zoneRows').value=z?.rows||2;$('zoneCols').value=z?.cols||9;$('deleteZone').classList.toggle('hidden',!z);openModal('zoneEditModal')}
+function nextZoneName(){const used=new Set(state.zones.map(z=>z.name.toUpperCase()));for(let i=65;i<=90;i++){const c=String.fromCharCode(i);if(!used.has(c))return c}return 'Zone '+(state.zones.length+1)}
+$('saveZone').onclick=()=>{const name=$('zoneName').value.trim(),rows=+$('zoneRows').value,cols=+$('zoneCols').value;if(!name||rows<1||cols<1){showToast('Enter valid zone information');return}if(editZoneId){const z=zoneBy(editZoneId),oldRows=z.rows,oldCols=z.cols;z.name=name;z.rows=rows;z.cols=cols;if(rows<oldRows||cols<oldCols){for(const id of Object.keys(state.assignments)){const p=parseCell(id);if(p?.zoneId===z.id&&(p.row>=rows||p.col>=cols))delete state.assignments[id]}}}else{let id=name.replace(/[^a-zA-Z0-9_-]/g,'_')||'zone';let base=id,n=2;while(zoneBy(id))id=base+'_'+n++;state.zones.push({id,name,rows,cols,topLabels:true});activeZoneId=id}selected.clear();closeModal('zoneEditModal');renderAll();saveState('Zone saved')};
+$('deleteZone').onclick=()=>{if(!editZoneId)return;if(state.zones.length<=1){showToast('At least one zone is required');return}const z=zoneBy(editZoneId);if(!confirm(`Delete Zone ${z.name} and all assignments inside it?`))return;state.zones=state.zones.filter(x=>x.id!==editZoneId);for(const id of Object.keys(state.assignments))if(parseCell(id)?.zoneId===editZoneId)delete state.assignments[id];activeZoneId=state.zones[0]?.id||null;selected.clear();closeModal('zoneEditModal');renderAll();saveState('Zone deleted')};
+function updateLive(){$('clientsPill').textContent=`${clients} device${clients===1?'':'s'}`;$('revisionPill').textContent='rev '+revision}
+
+window.addEventListener('resize',()=>{clearTimeout(window.__wr);window.__wr=setTimeout(()=>renderMap(),120)});
+function validConfig(){const c=window.SUPABASE_CONFIG||{};return /^https:\/\/.+\.supabase\.co\/?$/.test(String(c.url||''))&&String(c.anonKey||'').length>30&&!String(c.anonKey).includes('PASTE_')}
+function connectionError(message){$('liveDot').classList.remove('on');$('liveText').textContent=message||'Connection unavailable'}
+async function loadAllMarkets(){
+  const all=[]; const pageSize=1000;
+  for(let from=0;;from+=pageSize){
+    const {data,error}=await db.from('markets').select('name,code,address').order('id',{ascending:true}).range(from,from+pageSize-1);
+    if(error)throw error; all.push(...(data||[])); if(!data||data.length<pageSize)break;
+  }
+  markets=all;
+}
+async function loadSnapshot(){
+  try{
+    if(!db)throw new Error('Supabase is not configured');
+    const {data,error}=await db.from('warehouse_state').select('state,revision').eq('id',1).single();
+    if(error)throw error;
+    state=data?.state||state; revision=Number(data?.revision)||0;
+    if(!markets.length)await loadAllMarkets();
+    updateLive(); renderAll(); $('liveDot').classList.add('on'); $('liveText').textContent='Live — Supabase connected';
+  }catch(e){console.error(e);connectionError('Database connection unavailable')}
+}
+function connectLive(){
+  if(!db)return;
+  if(liveChannel){db.removeChannel(liveChannel);liveChannel=null}
+  liveChannel=db.channel('warehouse-live',{config:{presence:{key:presenceKey}}})
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'warehouse_state',filter:'id=eq.1'},payload=>{
+      const nextRev=Number(payload.new?.revision)||0;
+      if(nextRev<=revision)return;
+      state=payload.new?.state||state; revision=nextRev; selected.clear(); updateLive(); renderAll(); showToast('Warehouse map updated live');
+    })
+    .on('presence',{event:'sync'},()=>{
+      const ps=liveChannel.presenceState(); clients=Object.values(ps).reduce((n,list)=>n+(Array.isArray(list)?list.length:0),0); updateLive();
+    })
+    .subscribe(async status=>{
+      if(status==='SUBSCRIBED'){
+        $('liveDot').classList.add('on'); $('liveText').textContent='Live — Supabase connected';
+        await liveChannel.track({online_at:new Date().toISOString(),page:'warehouse'});
+      } else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT') connectionError('Realtime reconnecting…');
+    });
+}
+async function initApp(){
+  if(!validConfig()){
+    connectionError('Supabase setup required');
+    document.querySelector('.main')?.insertAdjacentHTML('afterbegin',`<div class="card" style="margin:14px auto;max-width:1180px;border:2px solid #f5b735"><b>Supabase configuration required</b><p style="margin:6px 0 0">Open <code>public/supabase-config.js</code> and paste your Supabase Project URL and anon/public key, then reload.</p></div>`);
+    return;
+  }
+  const c=window.SUPABASE_CONFIG;
+  db=window.supabase.createClient(c.url,c.anonKey,{auth:{persistSession:false,autoRefreshToken:false},realtime:{params:{eventsPerSecond:10}}});
+  await loadSnapshot(); connectLive();
+}
+initApp();
+</script>
+</body>
+</html>
