@@ -1,0 +1,21 @@
+Warehouse Placement Supabase Live V4 — Roles + Full Multilanguage
+
+NEW
+- Default role is گشتی (General).
+- General role: Zones page and all placement editing controls are hidden; users can search and view placed markets.
+- وەسڵ دانەر (Market Assigner) role: unlocks Zones and placement editing.
+- Market Assigner access code: 482731
+- Role is saved locally per browser/device with localStorage and applied before the page renders.
+- Language selector: Kurdish, Arabic, English.
+- Default language: Kurdish.
+- Language is saved locally per browser/device and applied before the page renders.
+- Full visible interface and dynamic status/message translations are included.
+- Kurdish/Arabic use RTL; English uses LTR.
+
+NO DATABASE MIGRATION REQUIRED
+- Existing Supabase URL/key and existing warehouse data are preserved.
+- Upload/commit the updated project to GitHub main; Cloudflare redeploys automatically.
+
+SECURITY NOTE
+- The role code is a client-side convenience lock, not strong server-side authentication.
+- For real access control against technical users, add Supabase Auth + RLS in a future version.

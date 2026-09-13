@@ -29,3 +29,12 @@ SUPABASE_SETUP_COMPLETE.sql   One-run database/schema/market import setup
 SET_SUPABASE_CONFIG.bat       Easy Windows config helper
 PREVIEW_LOCAL.bat             Optional local preview only
 Bruska-Market-Directory-3893.csv Original market source data
+
+V4 ROLE / LANGUAGE UPDATE
+-------------------------
+Default role: گشتی (General)
+Market Assigner role: وەسڵ دانەر
+Access code: 482731
+Default language: Kurdish
+Role and language are saved locally per browser/device.
+No new SQL migration is required for V4.
