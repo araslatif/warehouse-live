@@ -1,0 +1,6 @@
+V6 changes
+==========
+- Added a second permission line to the Market Assigner / وەسڵ دانەر role description.
+- Added tiny creator text beside/below the Settings button: دروست کراوە لە لایەن مهندس ئاراس, with مهندس ئاراس bold.
+- Made the Kurdish header title شوێنی ماڕکێتەکان لەناو ڕیزەکان smaller and forced it to a single line with ellipsis protection on very narrow screens.
+- Supabase configuration, role persistence, multilingual behavior, and database logic unchanged.
