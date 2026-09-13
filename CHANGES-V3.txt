@@ -1,0 +1,16 @@
+Warehouse Placement Supabase Live V3 — Zone Market Lists
+
+Changes:
+- Removed the warehouse cell/grid workflow from the UI.
+- Zones now contain market lists directly.
+- Clicking a zone focuses the market-number/name input.
+- Add markets by number or name, with catalog suggestions.
+- Each market row can be deleted directly from its zone.
+- Find Market marks placed markets and clicking a placed result jumps to its zone and highlights it.
+- Placed Markets list is more compact so more records fit on screen.
+- Existing old cell assignments are automatically converted in the browser into unique market entries per zone.
+- Supabase URL/key and Realtime connection remain unchanged.
+- No new SQL migration is required for this version because warehouse_state stores JSON.
+
+Deployment:
+Replace/update the repository files and commit to main. Cloudflare will redeploy automatically.
