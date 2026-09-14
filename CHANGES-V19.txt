@@ -1,0 +1,5 @@
+V19
+- Fixed custom confirmation modal stacking.
+- Confirmation dialogs now always appear above Recycle Bin and other modals.
+- Added full-screen overlay and higher z-index for confirm modal.
+- Confirmation card is vertically centered for better visibility on mobile.
