@@ -1,0 +1,9 @@
+V10 - FAST FIRST LOAD / GENERAL ROLE STARTUP FIX
+
+- Fixed General-role startup after removal of the old Search page.
+- General users now open the Placed Markets page immediately on first load.
+- Warehouse state/assigned markets render as soon as the small warehouse_state record arrives.
+- The full 3,893-market directory no longer blocks first rendering; it loads/refeshes in the background.
+- Added a local browser cache for the market directory to make number lookup and suggestions available faster on repeat visits.
+- Existing Supabase schema/data, roles, realtime behavior, language settings, and V9 zoneBadge design are unchanged.
+- No SQL migration is required.
