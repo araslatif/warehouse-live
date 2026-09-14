@@ -1,0 +1,7 @@
+V12
+- Market assigner role now opens the Zones/Rows page on every app open or browser refresh.
+- Numeric market-number field is focused automatically for faster assigning.
+- Market rows use a store/market icon instead of the old generic square icon.
+- zoneBadge no longer has the grid icon.
+- zoneBadge emphasizes the row/zone character with a larger, cleaner design.
+- Supabase schema and data model unchanged.
