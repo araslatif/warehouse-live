@@ -1,0 +1,8 @@
+Warehouse Placement Supabase Live V9
+
+Change:
+- Made zoneBadge cards larger and visually stronger.
+- Increased zone badge font size and weight.
+- Added a blue rack icon, gradient background, stronger border, rounded corners, and subtle shadow.
+- Improved mobile sizing while keeping badges compact enough for lists.
+- No Supabase/database changes are required.

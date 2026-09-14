@@ -1,0 +1,7 @@
+V8 - Remove separate Search page
+- Removed the separate Find/Search page and its bottom navigation button.
+- Placed Markets remains the single search/list page and keeps its existing search box.
+- General role now opens Placed Markets directly.
+- Assigner role still has Rows + Placed Markets.
+- Updated General-role descriptions in Kurdish, Arabic, and English.
+- No Supabase schema or SQL changes required.
