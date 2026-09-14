@@ -1,0 +1,7 @@
+Warehouse Placement Supabase Live V17
+
+- Moved the active signed-in role badge directly below the Settings button.
+- Freed the header title/subtitle area so the marked warehouse title information is fully visible.
+- Removed title ellipsis/truncation and allowed clean wrapping on narrow phones.
+- Kept the creator credit under the role badge.
+- Preserved Supabase, Realtime, roles, Recycle Bin, connected devices, and all V16 behavior.
