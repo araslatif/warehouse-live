@@ -1,0 +1,40 @@
+V21 - SUPER ADMIN CONTROL CENTER
+
+Super Admin role
+- Added Super Admin role protected by password: Aras913891.
+- Super Admin access is not persisted across page reloads; the password is required again to enter the role.
+- The password is compared as a SHA-256 hash in the frontend rather than stored as plain text.
+- Super Admin inherits all Market Assigner permissions.
+
+Super Admin Console
+- View every device/user profile known by the app, including active and inactive devices.
+- Active/inactive status uses Supabase Presence.
+- Shows saved name, device/browser details, first seen, last seen, last role and assignment count.
+- Market Assigner users are prioritized in the admin list.
+- Expand each user to see assignment activity and assigned market records.
+- Edit any saved user/device name directly as Super Admin.
+- Delete individual assignment-history records.
+- Clear all activity for one user.
+- Delete one user's profile and activity.
+- Clear the complete assignment activity history.
+- Clear the known user/device registry.
+- Permanently empty the Recycle Bin.
+- Clear every current placement; for safety, markets are moved to the Recycle Bin first.
+
+Reports / Export / Import
+- Full JSON backup export for shared application state.
+- Users CSV export.
+- Assignment activity CSV export.
+- Market directory + placement CSV export.
+- Printable/PDF-friendly Market Assigner report.
+- JSON backup import with confirmation.
+
+Device registry
+- Devices are registered in the shared state even if the user never manually sets a name.
+- Stores approximate first-seen, last-seen, last-role and device/browser details.
+- Existing V20 named profiles are migrated automatically when loaded.
+
+No database schema migration is required for V21 because these records remain inside warehouse_state JSON.
+
+Security note
+- This project is still a browser-based static app using a public Supabase client and a public state-save RPC. The Super Admin password prevents normal UI access, but true tamper-resistant authorization would require Supabase Auth + server-enforced RLS/RPC permissions.

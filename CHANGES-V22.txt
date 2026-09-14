@@ -1,0 +1,4 @@
+
+V22
+- Replaced the top ARAM Trading logo with the user-provided circular transparent logo.
+- No database or application logic changes.
