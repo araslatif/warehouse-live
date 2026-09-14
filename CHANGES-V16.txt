@@ -1,0 +1,12 @@
+V16 - Shared Recycle Bin + Connected Device Details
+
+- Added Delete control to every assigned market in the Placed Markets list for both General and Market Assigner roles.
+- Delete always asks for confirmation.
+- Deleting a placed market removes it from all currently assigned rows and stores the market + previous row locations in a shared Recycle Bin inside warehouse_state.
+- Both General and Market Assigner roles can restore a deleted market to its previous row(s).
+- Only Market Assigner can permanently remove records from the Recycle Bin.
+- Recycle Bin shows the market number/name, its previous rows, and deletion time.
+- Added a Recycle Bin counter/button on the Placed Markets page.
+- Made the connected-device count clickable.
+- Connected Devices modal shows live Supabase Presence entries with platform/browser, a stable per-browser device ID, current role, and online status.
+- No SQL/database schema migration required; recycleBin is stored inside the existing JSON warehouse_state.

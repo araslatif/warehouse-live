@@ -1,0 +1,9 @@
+V15 - Collapsible Row Management
+
+- Row/zone management is collapsed by default in Settings.
+- Market Assigner sees a single Manage Rows button instead of the full management list every time.
+- Tapping Manage Rows reveals all rows, market counts, Edit buttons, and Add Row.
+- Tapping again hides the management controls.
+- General role still cannot access row management.
+- Kurdish, Arabic, and English labels included.
+- No Supabase schema change required.
