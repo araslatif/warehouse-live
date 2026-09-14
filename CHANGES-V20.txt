@@ -1,0 +1,9 @@
+V20 - Persistent User Names + Assigner Activity
+- Each device can set a user name once without a password.
+- Later name changes require code 389138.
+- Names are stored in shared Supabase warehouse state and tied to the stable device ID.
+- Connected-device list shows saved user name first, with detected hardware/platform/browser fallback.
+- Market Assigners are grouped at the top of the connected-device list.
+- Clicking a connected Market Assigner shows tracked unique markets assigned by that device/user and their rows.
+- New assignments record device/user attribution for future activity counts.
+- Existing pre-V20 assignments cannot be retroactively attributed to a user.
