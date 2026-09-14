@@ -1,0 +1,11 @@
+V13 - Duplicate Assignment Protection + Force Multi-Row Assignment
+
+- Markets already assigned to one or more rows are visibly marked in the numeric assignment suggestions.
+- Existing row names are shown before assignment.
+- The same market cannot be silently added to another row.
+- If an assigner tries to add a market to another row, a clear confirmation explains the current placement(s) and asks whether to keep them and add the new row too.
+- Choosing Cancel leaves the market unchanged.
+- Choosing OK performs an intentional multi-row / force assignment.
+- Existing placement is preserved when force-adding another row.
+- Fully localized in Kurdish, Arabic, and English.
+- No database schema change required.

@@ -1,0 +1,9 @@
+V14 - Search all markets from the Placed Markets page
+
+- Normal Placed Markets list still shows assigned markets only.
+- When Search contains text, results are taken from the full market directory plus any placed markets present in state.
+- Unassigned markets now appear in search results with a clear Not Assigned status.
+- Assigned markets show their current row/zone names in the search result.
+- Search works by market number or market name.
+- General users can inspect unassigned markets without changing role.
+- No database schema changes required.
