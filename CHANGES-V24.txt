@@ -1,0 +1,9 @@
+Warehouse Placement Supabase Live V24
+
+Changes:
+- Profile photos can be added from Camera or Gallery.
+- Arabic-Indic and Kurdish/Persian digits are automatically normalized to English 0-9 in app inputs, including market codes and access codes.
+- Active-users/device button beside Live now uses a yellow background and opens the users/devices list.
+- General role sees only currently active users/devices in that list.
+- Market Assigner and Super Admin can also see known assigner users while offline, with their profile photo and tracked market-assignment details.
+- Existing Supabase data model remains compatible; no SQL migration required.
