@@ -1,0 +1,8 @@
+V25 - Connected users button fix
+
+- Fixed yellow connected-users button not opening.
+- Restored missing activeDeviceMap() helper used by the device list renderer.
+- Opens modal first and renders list safely with error fallback.
+- Reinforced mobile tap/click behavior for the yellow pill.
+- Preserves V24 role-based visibility: General = active users only; Assigner/Super Admin = all known assigners plus active users.
+- No SQL migration required.
