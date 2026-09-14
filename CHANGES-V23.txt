@@ -1,0 +1,12 @@
+V23 - Transparent ARAM Logo + Persistent User Profile Photos
+
+- Uses the exact uploaded ARAM circular PNG with its original alpha transparency.
+- Removed the white logo card/background so pixels outside the logo circle remain transparent.
+- Added profile photo setup in Settings for every device/user.
+- First profile photo can be added without a password.
+- After a photo exists, changing or deleting it requires the same profile-change code used for the name: 389138.
+- Photos are resized/compressed in the browser and saved online in the existing Supabase warehouse state for the device profile.
+- Active connected-device cards show the saved profile picture.
+- Super Admin all-known-user cards show profile pictures for active and inactive users.
+- Profile photo persists across reconnects/refreshes for the same registered device ID.
+- No SQL migration required.
