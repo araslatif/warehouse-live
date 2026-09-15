@@ -1,0 +1,8 @@
+V33 - Public assignment/check details + missing quantities
+- Every assigned-market card now shows the Market Assigner name to all roles.
+- Clicking an assigned-market record opens details for all roles.
+- Missing-item details are visible in the record detail view to all roles.
+- Missing items now store/display item code, item name, expected quantity, and missing quantity.
+- Checker can mark an item as entirely missing or record a partial missing quantity (e.g. expected 5, missing 3).
+- Missing market cards remain red; completed cards remain green.
+- Existing history logging retains the richer missingItems payload.
