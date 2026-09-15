@@ -1,0 +1,8 @@
+V31
+- Fixed checker missing-item catalog lookup by product code (کۆد).
+- Bundled 6,642-item CSV is now always loaded and merged with any Super Admin-updated catalog, preventing stale catalog data from breaking lookup.
+- Kurdish/Arabic digits are normalized before lookup.
+- Typing a full code immediately shows the item name; partial codes show selectable suggestions.
+- Enter/+ adds the matched code + item name to the missing list.
+- Checker (جەرد کەرەوە) no longer sees or can open the Rows/Zones navigation button/page.
+- No SQL migration required.
