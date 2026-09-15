@@ -1,0 +1,6 @@
+V30
+- Checker controls reordered: Done, Row badge, Missing.
+- Missing status card changed from orange to red.
+- Added Bruska item catalog (6642 records) to project.
+- Missing-item workflow accepts item ID or code, resolves item name, and stores/display code + name.
+- Super Admin can import an updated item CSV; imported minimal catalog is saved to Supabase shared state.
