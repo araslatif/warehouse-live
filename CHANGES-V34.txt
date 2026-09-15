@@ -1,0 +1,12 @@
+V34 - Admin Console + Organized History + Daily Reports
+
+- Fixed Admin/Super Admin console opening by closing Settings first and elevating the admin modal above other overlays.
+- Admin console access now also recognizes view_history permission.
+- History is organized into separate sections: Assignments, Checking, Removal/Deletion, Search/Open, Roles/Permissions, Other.
+- History still supports date, exact/around time, type, Today and All Days filters.
+- Added Daily Operations Report date selector to Admin/Super Admin console.
+- Added one-click Excel-compatible .xls daily export.
+- Added one-click PDF/Print report generation (opens browser print/save-as-PDF automatically).
+- Daily report uses persistent activity history, including assignment, checking, missing items, deletion/removal, restore, search-open and role events when logged.
+- Report summary shows counts for total activities, assignments, done, missing and removed records.
+- No Supabase SQL migration required.
