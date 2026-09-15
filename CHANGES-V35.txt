@@ -1,0 +1,7 @@
+V35
+- Fixed Admin and Super Admin control-panel launcher so opening it no longer falls back to the main page.
+- Added activity-category selector at the very top of History.
+- Categories: All, Assigning, Checking, Removing, Searching, Roles/Permissions, Other.
+- Selecting a category shows only that category's activity records.
+- Category buttons show counts for the currently selected date/time filters.
+- Existing date/time and exact activity filters remain available.
