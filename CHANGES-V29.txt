@@ -1,0 +1,10 @@
+V29 ADVANCED ROLES / CHECKER / PERMISSIONS / HISTORY
+- Added Admin and جەرد کەرەوە (Checker) roles.
+- Super Admin role/permission manager with per-action allow/deny, role password changes, access reset, and custom roles.
+- Device role authorization remembered in local storage + Supabase state; Super Admin can reset it.
+- Checker can mark assigned markets Done (green) or Missing (orange) and record multiple missing item numbers.
+- Admin/Super Admin can see assignment attribution.
+- Added full activity log for assignment, deletion, restore, checker status, role changes, and clicked search results.
+- History defaults to today and supports date, activity type, and around-time filtering.
+- Recycle Bin defaults to today with Today / All days / date controls.
+- Existing V28 features preserved.
