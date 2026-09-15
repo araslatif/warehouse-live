@@ -1,0 +1,5 @@
+V32
+- Renamed the bundled 6,642-item product CSV to public/items-catalog.csv to avoid Unicode filename/path deployment issues.
+- Fixed item catalog persistence through Supabase state normalization.
+- Hardened exact item-code lookup and numeric normalization.
+- Missing-item checker now resolves code to item name while typing and when adding.
