@@ -353,18 +353,76 @@ function userRows(){return Object.entries(state.deviceProfiles||{}).map(([id,p])
 function recycleRows(){return(state.recycleBin||[]).map(r=>({'Market Code':r.market?.code||'','Market Name':r.market?.name||'','Previous Rows':(r.placements||[]).map(x=>x.name).join(', '),'Deleted At':r.deletedAt||'','Deleted By':r.deletedByName||r.user_name||''}))}
 function checkRows(){return Object.entries(state.marketChecks||{}).map(([key,c])=>({'Market':key,'Status':c.status||'','Checker':c.user_name||c.checkerName||'','Checked At':c.at||c.checkedAt||'','Missing Items':Array.isArray(c.missingItems)?c.missingItems.map(i=>`${i.code||''} — ${i.name||''} | missing ${i.missingQty??i.qty??''}`).join(' ; '):''}))}
 function updateReportSummary(){const r=reportRowsForFilters();if($('adminReportSummary'))$('adminReportSummary').textContent=`${r.length} activities • ${r.filter(x=>reportCategory(x.type)==='assigning').length} assigned • ${r.filter(x=>x.type==='done').length} done • ${r.filter(x=>x.type==='missing').length} missing • ${r.filter(x=>reportCategory(x.type)==='removing').length} remove/restore`}
-function aoaSheet(title,rows){if(!rows.length)rows=[{'Information':'No records'}];const ws=XLSX.utils.json_to_sheet(rows);ws['!cols']=Object.keys(rows[0]).map(k=>({wch:Math.min(55,Math.max(14,k.length+4,...rows.slice(0,100).map(r=>String(r[k]??'').length+2)))}));return ws}
-function buildExcelFile(){if(!window.XLSX)throw new Error('Excel library is still loading');const f=reportFilters(),events=reportEventObjects(),wb=XLSX.utils.book_new();const summary=[{'Report':'ARAM Warehouse Advanced Report','From':f.from,'To':f.to,'Generated At':new Date().toLocaleString(),'Activities':events.length,'Assigned':events.filter(x=>x.Category==='assigning').length,'Checked Done':events.filter(x=>x.Activity==='Checked done').length,'Missing':events.filter(x=>x.Activity==='Missing items').length,'Removed/Restored':events.filter(x=>x.Category==='removing').length}];XLSX.utils.book_append_sheet(wb,aoaSheet('Summary',summary),'Summary');XLSX.utils.book_append_sheet(wb,aoaSheet('Activity',events),'Activity');if($('reportIncludePlacements')?.checked)XLSX.utils.book_append_sheet(wb,aoaSheet('Placements',currentPlacementRows()),'Current Placements');if($('reportIncludeUsers')?.checked)XLSX.utils.book_append_sheet(wb,aoaSheet('Users',userRows()),'Users');if($('reportIncludeRecycle')?.checked)XLSX.utils.book_append_sheet(wb,aoaSheet('Recycle',recycleRows()),'Recycle Bin');if($('reportIncludeChecks')?.checked)XLSX.utils.book_append_sheet(wb,aoaSheet('Checks',checkRows()),'Checks');if($('reportIncludeCatalog')?.checked)XLSX.utils.book_append_sheet(wb,aoaSheet('Items',(state.itemCatalog||[]).map(i=>({'Code':i.code||'','Name':i.name||'','ID':i.id||''})).slice(0,100000)),'Item Catalog');const bytes=XLSX.write(wb,{bookType:'xlsx',type:'array',compression:true});return new File([bytes],`ARAM-Warehouse-Report-${f.from}-to-${f.to}.xlsx`,{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
+function aoaSheet(title,rows){
+  if(!rows.length) rows=[{'Information':'No records found for the selected filters'}];
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const keys=Object.keys(rows[0]||{});
+  ws['!cols']=keys.map(k=>({wch:Math.min(60,Math.max(14,k.length+4,...rows.slice(0,200).map(r=>String(r[k]??'').length+2)))}));
+  if(ws['!ref']) ws['!autofilter']={ref:ws['!ref']};
+  return ws;
+}
+async function ensureScriptGlobal(globalName,urls){
+  if(window[globalName]) return window[globalName];
+  for(const url of urls){
+    try{
+      await new Promise((resolve,reject)=>{const sc=document.createElement('script');sc.src=url;sc.async=true;sc.onload=resolve;sc.onerror=reject;document.head.appendChild(sc)});
+      if(window[globalName]) return window[globalName];
+    }catch(e){console.warn('Library load failed',url,e)}
+  }
+  throw new Error(globalName==='XLSX'?'Excel engine could not load. Please check internet and reload.':'PDF engine could not load. Please check internet and reload.');
+}
+async function ensureXlsx(){return ensureScriptGlobal('XLSX',['https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js','https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js'])}
+async function ensureHtml2Pdf(){return ensureScriptGlobal('html2pdf',['https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js','https://unpkg.com/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js'])}
+async function buildExcelFile(){
+  await ensureXlsx();
+  const f=reportFilters(),events=reportEventObjects(),wb=XLSX.utils.book_new();
+  const summary=[{'Report':'ARAM Warehouse Advanced Report','From':f.from,'To':f.to,'Generated At':new Date().toLocaleString(),'Activities':events.length,'Assigned':events.filter(x=>x.Category==='assigning').length,'Checked Done':events.filter(x=>x.Activity==='Checked done').length,'Missing':events.filter(x=>x.Activity==='Missing items').length,'Removed/Restored':events.filter(x=>x.Category==='removing').length}];
+  XLSX.utils.book_append_sheet(wb,aoaSheet('Summary',summary),'Summary');
+  XLSX.utils.book_append_sheet(wb,aoaSheet('Activity',events),'Activity');
+  if($('reportIncludePlacements')?.checked)XLSX.utils.book_append_sheet(wb,aoaSheet('Placements',currentPlacementRows()),'Current Placements');
+  if($('reportIncludeUsers')?.checked)XLSX.utils.book_append_sheet(wb,aoaSheet('Users',userRows()),'Users');
+  if($('reportIncludeRecycle')?.checked)XLSX.utils.book_append_sheet(wb,aoaSheet('Recycle',recycleRows()),'Recycle Bin');
+  if($('reportIncludeChecks')?.checked)XLSX.utils.book_append_sheet(wb,aoaSheet('Checks',checkRows()),'Checks');
+  if($('reportIncludeCatalog')?.checked)XLSX.utils.book_append_sheet(wb,aoaSheet('Items',(state.itemCatalog||[]).map(i=>({'Code':i.code||'','Name':i.name||'','ID':i.id||''})).slice(0,100000)),'Item Catalog');
+  const bytes=XLSX.write(wb,{bookType:'xlsx',type:'array',compression:true});
+  if(!bytes||bytes.byteLength<1500) throw new Error('Excel creation failed: generated workbook is empty');
+  const u8=new Uint8Array(bytes); if(u8[0]!==0x50||u8[1]!==0x4b) throw new Error('Excel creation failed: invalid XLSX package');
+  return new File([bytes],`ARAM-Warehouse-Report-${f.from}-to-${f.to}.xlsx`,{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+}
 function escHtmlReport(v){return esc(String(v??''))}
-function buildDailyPdfElement(){const f=reportFilters(),events=reportEventObjects(),el=document.createElement('div');el.dir=currentLang==='en'?'ltr':'rtl';el.style.cssText='font-family:Arial,Tahoma,sans-serif;color:#152b3a;background:#fff;padding:20px;width:1000px;font-size:12px;line-height:1.45';const grouped={assigning:[],checking:[],removing:[],searching:[],roles:[],other:[]};events.forEach(e=>(grouped[e.Category]||grouped.other).push(e));const table=(rows)=>rows.length?`<table style="width:100%;border-collapse:collapse;margin:8px 0 18px"><thead><tr>${['Date','Time','Activity','Market Code','Market Name','Row / Zone','User / Assigner','Missing Items','Details'].map(h=>`<th style="border:1px solid #ccd8df;padding:6px;background:#eef4f7">${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${['Date','Time','Activity','Market Code','Market Name','Row / Zone','User / Assigner','Missing Items','Details'].map(h=>`<td style="border:1px solid #d9e2e7;padding:5px;vertical-align:top">${escHtmlReport(r[h])}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'<p>No records</p>';el.innerHTML=`<div style="text-align:center"><h1 style="margin:0">ARAM TRADING</h1><h2 style="margin:5px">Warehouse Advanced Operations Report</h2><b>${escHtmlReport(f.from)} → ${escHtmlReport(f.to)}</b><p>Generated: ${escHtmlReport(new Date().toLocaleString())}</p></div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px">${[['Activities',events.length],['Assigned',grouped.assigning.length],['Checking',grouped.checking.length],['Remove/Restore',grouped.removing.length],['Search',grouped.searching.length]].map(x=>`<div style="border:1px solid #ccd8df;border-radius:8px;padding:8px 14px"><b>${x[1]}</b><br>${x[0]}</div>`).join('')}</div>${Object.entries(grouped).filter(([k,v])=>!f.type||k===f.type).map(([k,v])=>`<h3 style="background:#eaf3f8;padding:8px;border-radius:7px;text-transform:capitalize">${k} (${v.length})</h3>${table(v)}`).join('')}`;return el}
-function downloadBlob(blob,name){const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000)}
+function buildDailyPdfElement(){
+  const f=reportFilters(),events=reportEventObjects(),el=document.createElement('div');
+  el.dir=currentLang==='en'?'ltr':'rtl';
+  el.style.cssText='font-family:Arial,Tahoma,sans-serif;color:#152b3a;background:#fff;padding:24px;width:1080px;box-sizing:border-box;font-size:12px;line-height:1.5';
+  const grouped={assigning:[],checking:[],removing:[],searching:[],roles:[],other:[]}; events.forEach(e=>(grouped[e.Category]||grouped.other).push(e));
+  const cols=['Date','Time','Activity','Market Code','Market Name','Row / Zone','User / Assigner','Missing Items','Details'];
+  const table=(rows)=>rows.length?`<table style="width:100%;border-collapse:collapse;margin:8px 0 18px;table-layout:fixed"><thead><tr>${cols.map(h=>`<th style="border:1px solid #9fb1bd;padding:6px;background:#e7f0f5;font-size:10px;word-break:break-word">${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(h=>`<td style="border:1px solid #cbd7de;padding:5px;vertical-align:top;font-size:9px;word-break:break-word;white-space:normal">${escHtmlReport(r[h])}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'<p style="padding:8px;border:1px solid #ddd">No records found for this section.</p>';
+  el.innerHTML=`<div style="text-align:center;border-bottom:2px solid #1769aa;padding-bottom:12px"><h1 style="margin:0;font-size:25px">ARAM TRADING</h1><h2 style="margin:5px;font-size:18px">Warehouse Advanced Operations Report</h2><b>${escHtmlReport(f.from)} → ${escHtmlReport(f.to)}</b><p style="margin:5px">Generated: ${escHtmlReport(new Date().toLocaleString())}</p></div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px">${[['Activities',events.length],['Assigned',grouped.assigning.length],['Checking',grouped.checking.length],['Remove/Restore',grouped.removing.length],['Search',grouped.searching.length]].map(x=>`<div style="border:1px solid #9fb1bd;border-radius:8px;padding:8px 14px;text-align:center"><b style="font-size:16px">${x[1]}</b><br>${x[0]}</div>`).join('')}</div>${events.length===0?'<div style="padding:30px;text-align:center;border:2px dashed #bbb"><b>No records found for the selected filters.</b></div>':Object.entries(grouped).filter(([k,v])=>(!f.type||k===f.type)&&v.length).map(([k,v])=>`<h3 style="background:#dcecf5;padding:8px;border-radius:7px;text-transform:capitalize;break-after:avoid">${k} (${v.length})</h3>${table(v)}`).join('')}`;
+  return el;
+}
 let pendingReportFile=null;
-async function nativeShareFile(file,title){if(!navigator.share){showToast('File sharing is not supported by this browser. Use Save to storage.');return false}try{if(navigator.canShare&&!navigator.canShare({files:[file]})){showToast('This browser cannot share this file type.');return false}await navigator.share({files:[file],title});return true}catch(e){if(e?.name!=='AbortError'){console.error(e);showToast('Could not open the device share menu.')}return false}}
 function showShareReady(file){pendingReportFile=file;$('reportShareInfo').textContent=`${file.name} • ${(file.size/1024).toFixed(1)} KB`;$('reportShareModal').classList.add('show')}
-async function buildPdfFile(){if(!window.html2pdf)throw new Error('PDF library failed to load. Check internet connection and reload the app.');const f=reportFilters(),name=`ARAM-Warehouse-Report-${f.from}-to-${f.to}.pdf`,el=buildDailyPdfElement();Object.assign(el.style,{position:'absolute',left:'0',top:'0',zIndex:'-1'});document.body.appendChild(el);await new Promise(r=>setTimeout(r,120));try{const worker=html2pdf().set({margin:[7,6,7,6],filename:name,image:{type:'jpeg',quality:.95},html2canvas:{scale:1.2,useCORS:true,backgroundColor:'#ffffff',logging:false,windowWidth:1050},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},pagebreak:{mode:['avoid-all','css','legacy']}}).from(el);const blob=await worker.outputPdf('blob');if(!(blob instanceof Blob)||blob.size<1000)throw new Error('PDF generator returned an empty file');return new File([blob],name,{type:'application/pdf'})}finally{el.remove()}}
+async function buildPdfFile(){
+  await ensureHtml2Pdf();
+  const f=reportFilters(),name=`ARAM-Warehouse-Report-${f.from}-to-${f.to}.pdf`,el=buildDailyPdfElement();
+  // IMPORTANT: keep the report fully rendered and paintable. Negative z-index caused blank PDFs on mobile.
+  Object.assign(el.style,{position:'fixed',left:'0',top:'0',zIndex:'2147483000',display:'block',visibility:'visible',opacity:'1',pointerEvents:'none'});
+  document.body.appendChild(el);
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(r,180))));
+  try{
+    const opt={margin:[7,6,7,6],filename:name,image:{type:'jpeg',quality:.96},html2canvas:{scale:1.35,useCORS:true,backgroundColor:'#ffffff',logging:false,scrollX:0,scrollY:0,windowWidth:1100},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},pagebreak:{mode:['css','legacy'],avoid:['tr','h3']}};
+    const worker=html2pdf().set(opt).from(el).toCanvas().toPdf();
+    const pdf=await worker.get('pdf');
+    const blob=pdf.output('blob');
+    if(!(blob instanceof Blob)||blob.size<2500) throw new Error('PDF creation failed: generated file is empty');
+    const head=new Uint8Array(await blob.slice(0,5).arrayBuffer()); const sig=String.fromCharCode(...head);
+    if(!sig.startsWith('%PDF')) throw new Error('PDF creation failed: invalid PDF data');
+    return new File([blob],name,{type:'application/pdf'});
+  }finally{el.remove()}
+}
 async function withReportButton(id,fn){const b=$(id);if(!b||b.disabled)return;b.disabled=true;const old=b.textContent;b.textContent='⏳';try{await fn()}catch(e){console.error(e);showToast((e&&e.message)||'Report creation failed')}finally{b.disabled=false;b.textContent=old}}
-async function createDailyExcel(){return withReportButton('adminDailyExcel',async()=>{const f=buildExcelFile();downloadBlob(f,f.name)})}
-async function shareDailyExcel(){return withReportButton('adminShareExcel',async()=>{showShareReady(buildExcelFile())})}
+async function createDailyExcel(){return withReportButton('adminDailyExcel',async()=>{const f=await buildExcelFile();downloadBlob(f,f.name)})}
+async function shareDailyExcel(){return withReportButton('adminShareExcel',async()=>{showShareReady(await buildExcelFile())})}
 async function createDailyPdf(){return withReportButton('adminDailyPdf',async()=>{const f=await buildPdfFile();downloadBlob(f,f.name)})}
 async function shareDailyPdf(){return withReportButton('adminSharePdf',async()=>{showShareReady(await buildPdfFile())})}
 function createAdminReport(){createDailyPdf()}

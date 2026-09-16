@@ -1,0 +1,9 @@
+V42 REPORT GENERATION REPAIR
+- Focused only on creating valid PDF and XLSX report files.
+- Fixed blank PDF root cause: report was rendered with negative z-index.
+- PDF report now stays paintable during capture and validates %PDF signature and minimum size before saving.
+- Reworked PDF tables and empty-state handling.
+- Excel builder is asynchronous, waits for XLSX engine, has CDN fallbacks, and validates the XLSX ZIP signature before saving.
+- Excel sheets: Summary, Activity, optional Current Placements, Users, Recycle Bin, Checks, Item Catalog.
+- Added explicit "No records found" output instead of silently creating an apparently blank report.
+- Sharing behavior intentionally not changed/focused in this version.
