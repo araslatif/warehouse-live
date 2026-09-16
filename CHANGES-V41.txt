@@ -1,0 +1,8 @@
+V41 ADVANCED REPORTING ENGINE
+- Fixed PDF creation error caused by missing PDF report builder.
+- Added customizable date range, activity, role, user and market filters.
+- Added optional report datasets: users, placements, recycle bin, checks/missing items, item catalog.
+- Excel is a real XLSX workbook with separate sheets.
+- PDF is a structured multi-section operations report.
+- Separate Save and Share workflows. Share generation opens a ready card; second tap invokes native OS share sheet with a fresh user gesture.
+- Report data comes from persistent activity history and current app state.
