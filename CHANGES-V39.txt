@@ -1,0 +1,7 @@
+V39 - Native report sharing and admin-console freeze fix
+- Removed automatic download fallback from Daily PDF/Excel report buttons.
+- Reports now prefer the operating system Web Share sheet for sharing to other apps.
+- If PDF generation consumes browser user activation, a dedicated high-level Share Report card appears; one tap opens the native share sheet with fresh user activation.
+- The Share Report card can always be closed and no longer traps/freezes the Admin/Super Admin console.
+- PDF/Excel buttons are protected against duplicate taps and are always re-enabled after generation/share attempts.
+- Existing V38 numeric zones and all prior features retained.

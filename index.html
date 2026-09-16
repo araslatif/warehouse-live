@@ -340,17 +340,51 @@ function reportEventLabel(x){const map={assign:'Assigned',force_assign:'Force as
 function reportDetail(x){if(x.type==='missing'&&Array.isArray(x.missingItems))return x.missingItems.map(i=>`${i.code||''} ${i.name||''} (missing ${i.missingQty??i.missing??''} / expected ${i.expectedQty??i.expected??''})`).join(' | ');const z=x.zone?.name||x.zone||x.placements?.join?.(', ')||'';return z?`Row: ${z}`:''}
 function dailyReportData(date){const rows=reportRowsForDate(date);return rows.map(x=>({time:new Date(x.at).toLocaleTimeString(),type:reportEventLabel(x),marketCode:x.market?.code||'',marketName:x.market?.name||'',user:x.user_name||deviceProfile(x.device_id)?.name||x.device_id||'',role:x.role||'',detail:reportDetail(x)}))}
 function updateReportSummary(){const d=$('adminReportDate')?.value||new Date().toISOString().slice(0,10),r=reportRowsForDate(d);if($('adminReportSummary'))$('adminReportSummary').textContent=`${r.length} activities • ${r.filter(x=>x.type==='assign'||x.type==='force_assign').length} assigned • ${r.filter(x=>x.type==='done').length} done • ${r.filter(x=>x.type==='missing').length} missing • ${r.filter(x=>x.type==='delete').length} removed`}
-async function shareReportFile(file,title){
-  try{
-    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-      await navigator.share({files:[file],title:title});
-      return true;
+let pendingReportShare=null;
+function ensureReportShareModal(){
+  let bg=document.getElementById('reportShareModal');
+  if(bg)return bg;
+  bg=document.createElement('div');bg.id='reportShareModal';bg.className='modalBg';bg.style.zIndex='1200';
+  bg.innerHTML=`<div class="modal" style="max-width:430px"><div class="modalHead"><h3 id="reportShareTitle">Share report</h3><button class="xbtn" id="reportShareClose">×</button></div><div style="padding:12px 0;text-align:center"><div style="font-size:42px">📤</div><p id="reportShareText" style="font-weight:800">Report is ready to share</p><button class="btn primary" id="reportShareNow" type="button" style="width:100%;font-size:17px">📤 Share with another app</button></div></div>`;
+  document.body.appendChild(bg);
+  document.getElementById('reportShareClose').onclick=()=>{bg.classList.remove('show');bg.style.display='none';pendingReportShare=null};
+  document.getElementById('reportShareNow').onclick=async()=>{
+    if(!pendingReportShare)return;
+    const {file,title}=pendingReportShare;
+    try{
+      await navigator.share({files:[file],title});
+      bg.classList.remove('show');bg.style.display='none';pendingReportShare=null;
+    }catch(err){
+      if(err?.name!=='AbortError'){console.error('Native file share failed',err);showToast(currentLang==='ku'?'ئەم وێبگەڕە ناتوانێت ئەم فایلە بە ڕاستەوخۆ هاوبەش بکات':currentLang==='ar'?'هذا المتصفح لا يدعم مشاركة هذا الملف مباشرة':'This browser cannot share this file directly');}
     }
-  }catch(err){if(err&&err.name==='AbortError')return false;console.warn('Share failed; downloading instead',err)}
-  const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download=file.name;a.style.display='none';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);return false
+  };
+  return bg;
+}
+function showReportShareReady(file,title){
+  pendingReportShare={file,title};const bg=ensureReportShareModal();
+  document.getElementById('reportShareTitle').textContent=currentLang==='ku'?'هاوبەشکردنی ڕاپۆرت':currentLang==='ar'?'مشاركة التقرير':'Share report';
+  document.getElementById('reportShareText').textContent=currentLang==='ku'?'ڕاپۆرتەکە ئامادەیە — لەگەڵ ئەپی تر هاوبەشی بکە':currentLang==='ar'?'التقرير جاهز — شاركه مع تطبيق آخر':'Report is ready — share it with another app';
+  document.getElementById('reportShareNow').textContent=currentLang==='ku'?'📤 هاوبەشکردن لەگەڵ ئەپی تر':currentLang==='ar'?'📤 مشاركة مع تطبيق آخر':'📤 Share with another app';
+  bg.style.display='flex';bg.classList.add('show');
+}
+async function shareReportFile(file,title){
+  // Never auto-download reports. Prefer the OS share sheet. If async PDF creation
+  // has consumed browser user activation, show one explicit Share button so the
+  // next tap has a fresh user gesture and Android/iOS can open the native share sheet.
+  if(!navigator.share){showReportShareReady(file,title);return false}
+  try{
+    await navigator.share({files:[file],title:title});
+    return true;
+  }catch(err){
+    if(err?.name==='AbortError')return false;
+    console.warn('Immediate native share unavailable; waiting for explicit share tap',err);
+    showReportShareReady(file,title);return false;
+  }
 }
 async function createDailyExcel(){
   if(!hasPerm('reports')&&!isSuperAdmin())return;
+  const btn=$('adminDailyExcel');if(btn.disabled)return;btn.disabled=true;
+  try{
   const date=$('adminReportDate').value||new Date().toISOString().slice(0,10),data=dailyReportData(date);
   const heads=['Time','Activity','Market Code','Market Name','User','Role','Details'];
   const trs=data.map(r=>`<tr>${[r.time,r.type,r.marketCode,r.marketName,r.user,r.role,r.detail].map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('');
@@ -358,6 +392,7 @@ async function createDailyExcel(){
   const blob=new Blob(['\ufeff',html],{type:'application/vnd.ms-excel'});
   const file=new File([blob],`warehouse-daily-report-${date}.xls`,{type:'application/vnd.ms-excel'});
   await shareReportFile(file,`ARAM Warehouse Daily Report — ${date}`)
+  }finally{btn.disabled=false}
 }
 function buildDailyPdfElement(date,data){
   const grouped={};for(const r of data)(grouped[r.type]??=[]).push(r);
@@ -368,14 +403,15 @@ function buildDailyPdfElement(date,data){
 }
 async function createDailyPdf(){
   if(!hasPerm('reports')&&!isSuperAdmin())return;
+  const btn=$('adminDailyPdf');if(btn.disabled)return;btn.disabled=true;
   const date=$('adminReportDate').value||new Date().toISOString().slice(0,10),data=dailyReportData(date),name=`warehouse-daily-report-${date}.pdf`;
-  if(!window.html2pdf){alert('PDF generator is still loading. Please try again.');return}
+  if(!window.html2pdf){btn.disabled=false;showToast('PDF generator is still loading. Please try again.');return}
   const el=buildDailyPdfElement(date,data);document.body.appendChild(el);el.style.position='fixed';el.style.left='-20000px';el.style.top='0';
   try{
     const blob=await html2pdf().set({margin:8,filename:name,image:{type:'jpeg',quality:.96},html2canvas:{scale:1.5,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},pagebreak:{mode:['css','legacy']}}).from(el).outputPdf('blob');
     const file=new File([blob],name,{type:'application/pdf'});
     await shareReportFile(file,`ARAM Warehouse Daily Report — ${date}`)
-  }finally{el.remove()}
+  }finally{el.remove();btn.disabled=false}
 }
 function createAdminReport(){createDailyPdf()}
 async function importBackupFile(file){if(!isSuperAdmin()||!file)return;try{const obj=JSON.parse(await file.text());const source=obj&&obj.state?obj.state:obj;if(!source||typeof source!=='object'||!Array.isArray(source.zones))throw new Error('invalid');if(!(await appConfirm(t('confirmImportBackup'))))return;state=normalizeState(source);activeZoneId=state.zones[0]?.id||null;touchCurrentDeviceProfile(false);await saveState(t('backupImported'),true);renderAll();renderSuperAdmin()}catch(e){console.error(e);showToast(t('invalidBackup'))}finally{$('adminImportFile').value=''}}
