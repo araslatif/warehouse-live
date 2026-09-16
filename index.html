@@ -113,7 +113,7 @@ html:not([data-role="superadmin"]) .superAdminOnly{display:none!important}
 <div class="modalBg" id="missingModal"><div class="modal"><div class="modalHead"><h3 data-i18n="missingItems">Missing items</h3><button class="xbtn" data-close="missingModal">×</button></div><div id="missingMarketLabel" class="roleHint"></div><div class="field"><label data-i18n="missingItemEntry">کۆدی کەرەستە / Item code</label><div class="addStrip"><input id="missingItemLookup" autocomplete="off" inputmode="text" placeholder="کۆدی کەرەستە / Item code"><button class="btn primary" id="addMissingItem" type="button">＋</button></div></div><div id="missingLookupResult" class="roleHint"></div><div id="missingItemsSelected" class="activityList"></div><div class="roleHint" data-i18n="missingItemsHint">Enter the item ID or code. The app finds the item name automatically and saves its code.</div><div class="modalBtns"><button class="btn primary" id="saveMissingItems" data-i18n="save">Save</button><button class="btn soft" data-close="missingModal" data-i18n="cancel">Cancel</button></div></div></div>
 <div class="modalBg" id="superAdminModal"><div class="modal adminModal"><div class="modalHead"><h3 data-i18n="superAdminConsole">Super Admin Console</h3><button class="xbtn" data-close="superAdminModal">×</button></div>
 <div class="adminGrid" id="adminStats"></div>
-<div class="reportBar"><b data-i18n="dailyReport">Daily Operations Report</b><input id="adminReportDate" type="date"><button class="btn primary" id="adminDailyPdf" type="button">PDF</button><button class="btn soft" id="adminDailyExcel" type="button">Excel</button><span class="reportSummary" id="adminReportSummary"></span></div>
+<div class="reportBar"><b data-i18n="dailyReport">Daily Operations Report</b><input id="adminReportDate" type="date"><button class="btn primary" id="adminDailyPdf" type="button">⬇ PDF</button><button class="btn soft" id="adminSharePdf" type="button">📤 PDF</button><button class="btn primary" id="adminDailyExcel" type="button">⬇ Excel</button><button class="btn soft" id="adminShareExcel" type="button">📤 Excel</button><span class="reportSummary" id="adminReportSummary"></span></div>
 <div class="adminToolbar">
 <button class="btn soft" id="adminExportBackup" type="button" data-i18n="exportBackup">Export Backup</button>
 <button class="btn soft" id="adminExportUsers" type="button" data-i18n="exportUsers">Export Users CSV</button>
@@ -138,6 +138,7 @@ html:not([data-role="superadmin"]) .superAdminOnly{display:none!important}
 <div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="./supabase-config.js"></script>
 <script>
 const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));const norm=s=>String(s??'').trim();
@@ -177,6 +178,9 @@ function roleConfig(role=currentRole){return state?.roleConfigs?.[role]||null}fu
 let state={zones:[],zoneMarkets:{},recycleBin:[],deviceProfiles:{},assignmentLog:[],activityLog:[],marketChecks:{},roleConfigs:{}};let markets=[];let revision=0,clients=0,connectedDevices=[],activeZoneId=null,detailMarket=null,editZoneId=null,db=null,liveChannel=null;const DEVICE_ID_KEY='warehouse_device_id_v1';const LAST_ZONE_KEY='warehouse_last_selected_zone_v1';const DEVICE_NAME_CHANGE_CODE='389138';const SUPERADMIN_HASH='5d0f197388423a9251418337e328af82fbe46a4dcba2c10caf2c8aba4adb6109';let stableDeviceId=localStorage.getItem(DEVICE_ID_KEY)||Math.random().toString(36).slice(2,6).toUpperCase();localStorage.setItem(DEVICE_ID_KEY,stableDeviceId);const presenceKey='device-'+stableDeviceId+'-'+Math.random().toString(36).slice(2,7);let deviceNameChangeAuthorized=false,pendingProfileAction=null,expandedDeviceId=null,detectedHardwareName='',pendingRole=null,expandedAdminUserId=null,adminEditingUserId=null;
 function showToast(x){const el=$('toast');el.textContent=x;el.classList.add('show');clearTimeout(window.__tt);window.__tt=setTimeout(()=>el.classList.remove('show'),1800)}
 function openModal(id){$(id).classList.add('show')}function closeModal(id){$(id).classList.remove('show')}document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));document.querySelectorAll('.modalBg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id)}));
+// Hard close path for the Admin/Super Admin console. Capture phase prevents later handlers from trapping it.
+document.addEventListener('click',e=>{const b=e.target.closest?.('[data-close="superAdminModal"]');if(!b)return;e.preventDefault();e.stopPropagation();const m=$('superAdminModal');m.classList.remove('show');m.style.display='';document.body.style.overflow='';},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('superAdminModal')?.classList.contains('show')){closeModal('superAdminModal');document.body.style.overflow='';}});
 function confirmLabels(){return currentLang==='ku'?{title:'دڵنیابوونەوە',ok:'بەڵێ',cancel:'نەخێر'}:currentLang==='ar'?{title:'تأكيد',ok:'نعم',cancel:'إلغاء'}:{title:'Confirmation',ok:'OK',cancel:'Cancel'}}
 function appConfirm(message){return new Promise(resolve=>{const l=confirmLabels();$('confirmTitle').textContent=l.title;$('confirmMessage').textContent=message;$('confirmOk').textContent=l.ok;$('confirmCancel').textContent=l.cancel;openModal('confirmModal');let done=false;const finish=v=>{if(done)return;done=true;closeModal('confirmModal');$('confirmOk').onclick=null;$('confirmCancel').onclick=null;resolve(v)};$('confirmOk').onclick=()=>finish(true);$('confirmCancel').onclick=()=>finish(false);});}
 
@@ -340,79 +344,63 @@ function reportEventLabel(x){const map={assign:'Assigned',force_assign:'Force as
 function reportDetail(x){if(x.type==='missing'&&Array.isArray(x.missingItems))return x.missingItems.map(i=>`${i.code||''} ${i.name||''} (missing ${i.missingQty??i.missing??''} / expected ${i.expectedQty??i.expected??''})`).join(' | ');const z=x.zone?.name||x.zone||x.placements?.join?.(', ')||'';return z?`Row: ${z}`:''}
 function dailyReportData(date){const rows=reportRowsForDate(date);return rows.map(x=>({time:new Date(x.at).toLocaleTimeString(),type:reportEventLabel(x),marketCode:x.market?.code||'',marketName:x.market?.name||'',user:x.user_name||deviceProfile(x.device_id)?.name||x.device_id||'',role:x.role||'',detail:reportDetail(x)}))}
 function updateReportSummary(){const d=$('adminReportDate')?.value||new Date().toISOString().slice(0,10),r=reportRowsForDate(d);if($('adminReportSummary'))$('adminReportSummary').textContent=`${r.length} activities • ${r.filter(x=>x.type==='assign'||x.type==='force_assign').length} assigned • ${r.filter(x=>x.type==='done').length} done • ${r.filter(x=>x.type==='missing').length} missing • ${r.filter(x=>x.type==='delete').length} removed`}
-let pendingReportShare=null;
-function ensureReportShareModal(){
-  let bg=document.getElementById('reportShareModal');
-  if(bg)return bg;
-  bg=document.createElement('div');bg.id='reportShareModal';bg.className='modalBg';bg.style.zIndex='1200';
-  bg.innerHTML=`<div class="modal" style="max-width:430px"><div class="modalHead"><h3 id="reportShareTitle">Share report</h3><button class="xbtn" id="reportShareClose">×</button></div><div style="padding:12px 0;text-align:center"><div style="font-size:42px">📤</div><p id="reportShareText" style="font-weight:800">Report is ready to share</p><button class="btn primary" id="reportShareNow" type="button" style="width:100%;font-size:17px">📤 Share with another app</button></div></div>`;
-  document.body.appendChild(bg);
-  document.getElementById('reportShareClose').onclick=()=>{bg.classList.remove('show');bg.style.display='none';pendingReportShare=null};
-  document.getElementById('reportShareNow').onclick=async()=>{
-    if(!pendingReportShare)return;
-    const {file,title}=pendingReportShare;
-    try{
-      await navigator.share({files:[file],title});
-      bg.classList.remove('show');bg.style.display='none';pendingReportShare=null;
-    }catch(err){
-      if(err?.name!=='AbortError'){console.error('Native file share failed',err);showToast(currentLang==='ku'?'ئەم وێبگەڕە ناتوانێت ئەم فایلە بە ڕاستەوخۆ هاوبەش بکات':currentLang==='ar'?'هذا المتصفح لا يدعم مشاركة هذا الملف مباشرة':'This browser cannot share this file directly');}
-    }
+function reportRows(date){
+  const data=dailyReportData(date);
+  const rows=(data.rows||data||[]);
+  return Array.isArray(rows)?rows:[];
+}
+function reportRowObject(r){
+  const x=r||{}; const meta=x.meta||{};
+  return {
+    'Date/Time': x.time||x.createdAt||x.ts||'',
+    'Activity': x.type||x.action||'',
+    'Market Code': x.marketCode||x.market?.code||x.marketId||'',
+    'Market Name': x.marketName||x.market?.name||'',
+    'Zone': x.zoneName||x.zone||meta.zone||'',
+    'User / Assigner': x.userName||x.actorName||x.assignerName||meta.assignerName||'',
+    'Role': x.role||'',
+    'Checker': x.checkerName||meta.checkerName||'',
+    'Missing Items': Array.isArray(x.missingItems||meta.missingItems)?(x.missingItems||meta.missingItems).map(i=>`${i.code||''} ${i.name||''} (${i.missingQty||i.qty||''})`).join(' | '):(x.missingItems||meta.missingItems||''),
+    'Details': x.details||x.message||meta.note||''
   };
-  return bg;
 }
-function showReportShareReady(file,title){
-  pendingReportShare={file,title};const bg=ensureReportShareModal();
-  document.getElementById('reportShareTitle').textContent=currentLang==='ku'?'هاوبەشکردنی ڕاپۆرت':currentLang==='ar'?'مشاركة التقرير':'Share report';
-  document.getElementById('reportShareText').textContent=currentLang==='ku'?'ڕاپۆرتەکە ئامادەیە — لەگەڵ ئەپی تر هاوبەشی بکە':currentLang==='ar'?'التقرير جاهز — شاركه مع تطبيق آخر':'Report is ready — share it with another app';
-  document.getElementById('reportShareNow').textContent=currentLang==='ku'?'📤 هاوبەشکردن لەگەڵ ئەپی تر':currentLang==='ar'?'📤 مشاركة مع تطبيق آخر':'📤 Share with another app';
-  bg.style.display='flex';bg.classList.add('show');
+function downloadBlob(blob,name){const a=document.createElement('a');const u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
+async function nativeShareFile(file,title){
+  if(!navigator.share){showToast(currentLang==='ku'?'ئەم وێبگەڕە هاوبەشکردنی فایل پشتگیری ناکات':currentLang==='ar'?'هذا المتصفح لا يدعم مشاركة الملفات':'This browser does not support file sharing');return false}
+  try{if(navigator.canShare&&!navigator.canShare({files:[file]}))throw new Error('file share unsupported');await navigator.share({files:[file],title});return true}catch(e){if(e?.name!=='AbortError'){console.error(e);showToast(currentLang==='ku'?'هاوبەشکردن لەم وێبگەڕەدا بەردەست نییە':currentLang==='ar'?'مشاركة الملف غير متاحة في هذا المتصفح':'File sharing is unavailable in this browser')}return false}
 }
-async function shareReportFile(file,title){
-  // Never auto-download reports. Prefer the OS share sheet. If async PDF creation
-  // has consumed browser user activation, show one explicit Share button so the
-  // next tap has a fresh user gesture and Android/iOS can open the native share sheet.
-  if(!navigator.share){showReportShareReady(file,title);return false}
+function buildExcelFile(date){
+  if(!window.XLSX)throw new Error('Excel library is still loading');
+  const rows=reportRows(date).map(reportRowObject);
+  const summary=[{Date:date,'Total activities':rows.length}];
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.json_to_sheet(rows.length?rows:[{'Date/Time':'','Activity':'No records for selected date'}]);
+  ws['!cols']=[{wch:22},{wch:18},{wch:16},{wch:36},{wch:10},{wch:24},{wch:16},{wch:24},{wch:55},{wch:45}];
+  XLSX.utils.book_append_sheet(wb,ws,'Daily Activity');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(summary),'Summary');
+  const bytes=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+  return new File([bytes],`warehouse-daily-report-${date}.xlsx`,{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+}
+async function buildPdfFile(date){
+  if(!window.html2pdf)throw new Error('PDF generator is still loading');
+  const data=dailyReportData(date), name=`warehouse-daily-report-${date}.pdf`;
+  const el=buildDailyPdfElement(date,data);
+  // Keep the report inside the rendered viewport while html2canvas captures it.
+  // A previous version positioned it far off-screen, which produced blank PDFs on mobile browsers.
+  Object.assign(el.style,{position:'fixed',left:'0',top:'0',width:'1120px',maxWidth:'1120px',background:'#fff',zIndex:'2147483000',opacity:'1',pointerEvents:'none',maxHeight:'none',overflow:'visible'});
+  document.body.appendChild(el);
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
   try{
-    await navigator.share({files:[file],title:title});
-    return true;
-  }catch(err){
-    if(err?.name==='AbortError')return false;
-    console.warn('Immediate native share unavailable; waiting for explicit share tap',err);
-    showReportShareReady(file,title);return false;
-  }
+    const blob=await html2pdf().set({margin:7,filename:name,image:{type:'jpeg',quality:.97},html2canvas:{scale:1.5,useCORS:true,backgroundColor:'#ffffff',scrollX:0,scrollY:0},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},pagebreak:{mode:['css','legacy']}}).from(el).outputPdf('blob');
+    if(!blob||blob.size<800)throw new Error('Generated PDF is empty');
+    return new File([blob],name,{type:'application/pdf'});
+  }finally{el.remove()}
 }
-async function createDailyExcel(){
-  if(!hasPerm('reports')&&!isSuperAdmin())return;
-  const btn=$('adminDailyExcel');if(btn.disabled)return;btn.disabled=true;
-  try{
-  const date=$('adminReportDate').value||new Date().toISOString().slice(0,10),data=dailyReportData(date);
-  const heads=['Time','Activity','Market Code','Market Name','User','Role','Details'];
-  const trs=data.map(r=>`<tr>${[r.time,r.type,r.marketCode,r.marketName,r.user,r.role,r.detail].map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('');
-  const html=`<html><head><meta charset="utf-8"></head><body><h2>ARAM Warehouse — Daily Operations Report</h2><p>${esc(date)}</p><table border="1"><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr>${trs}</table></body></html>`;
-  const blob=new Blob(['\ufeff',html],{type:'application/vnd.ms-excel'});
-  const file=new File([blob],`warehouse-daily-report-${date}.xls`,{type:'application/vnd.ms-excel'});
-  await shareReportFile(file,`ARAM Warehouse Daily Report — ${date}`)
-  }finally{btn.disabled=false}
-}
-function buildDailyPdfElement(date,data){
-  const grouped={};for(const r of data)(grouped[r.type]??=[]).push(r);
-  const sections=Object.entries(grouped).map(([type,rows])=>`<h2>${esc(type)} (${rows.length})</h2><table><thead><tr><th>Time</th><th>Market</th><th>User</th><th>Role</th><th>Details</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.marketCode+' '+r.marketName)}</td><td>${esc(r.user)}</td><td>${esc(r.role)}</td><td>${esc(r.detail)}</td></tr>`).join('')}</tbody></table>`).join('');
-  const el=document.createElement('div');el.dir=currentLang==='en'?'ltr':'rtl';el.style.cssText='font-family:Arial,sans-serif;padding:18px;color:#14263a;background:#fff;width:1050px';
-  el.innerHTML=`<style>h1{font-size:22px}h2{font-size:16px;margin-top:20px;background:#eef5fa;padding:8px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccd9e2;padding:6px;font-size:10px;text-align:start}th{background:#f5f8fa}</style><h1>ARAM Warehouse — ${esc(t('dailyReport'))}</h1><p>${esc(date)} • ${data.length} activities</p>${sections||'<p>No activity</p>'}`;
-  return el
-}
-async function createDailyPdf(){
-  if(!hasPerm('reports')&&!isSuperAdmin())return;
-  const btn=$('adminDailyPdf');if(btn.disabled)return;btn.disabled=true;
-  const date=$('adminReportDate').value||new Date().toISOString().slice(0,10),data=dailyReportData(date),name=`warehouse-daily-report-${date}.pdf`;
-  if(!window.html2pdf){btn.disabled=false;showToast('PDF generator is still loading. Please try again.');return}
-  const el=buildDailyPdfElement(date,data);document.body.appendChild(el);el.style.position='fixed';el.style.left='-20000px';el.style.top='0';
-  try{
-    const blob=await html2pdf().set({margin:8,filename:name,image:{type:'jpeg',quality:.96},html2canvas:{scale:1.5,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},pagebreak:{mode:['css','legacy']}}).from(el).outputPdf('blob');
-    const file=new File([blob],name,{type:'application/pdf'});
-    await shareReportFile(file,`ARAM Warehouse Daily Report — ${date}`)
-  }finally{el.remove();btn.disabled=false}
-}
+async function withReportButton(id,fn){const b=$(id);if(!b||b.disabled)return;b.disabled=true;try{await fn()}catch(e){console.error(e);showToast(e.message||'Report creation failed')}finally{b.disabled=false}}
+async function createDailyExcel(){return withReportButton('adminDailyExcel',async()=>{const d=$('adminReportDate').value||new Date().toISOString().slice(0,10);downloadBlob(buildExcelFile(d),`warehouse-daily-report-${d}.xlsx`)})}
+async function shareDailyExcel(){return withReportButton('adminShareExcel',async()=>{const d=$('adminReportDate').value||new Date().toISOString().slice(0,10);await nativeShareFile(buildExcelFile(d),`ARAM Warehouse Daily Report — ${d}`)})}
+async function createDailyPdf(){return withReportButton('adminDailyPdf',async()=>{const d=$('adminReportDate').value||new Date().toISOString().slice(0,10);const f=await buildPdfFile(d);downloadBlob(f,f.name)})}
+async function shareDailyPdf(){return withReportButton('adminSharePdf',async()=>{const d=$('adminReportDate').value||new Date().toISOString().slice(0,10);const f=await buildPdfFile(d);await nativeShareFile(f,`ARAM Warehouse Daily Report — ${d}`)})}
 function createAdminReport(){createDailyPdf()}
 async function importBackupFile(file){if(!isSuperAdmin()||!file)return;try{const obj=JSON.parse(await file.text());const source=obj&&obj.state?obj.state:obj;if(!source||typeof source!=='object'||!Array.isArray(source.zones))throw new Error('invalid');if(!(await appConfirm(t('confirmImportBackup'))))return;state=normalizeState(source);activeZoneId=state.zones[0]?.id||null;touchCurrentDeviceProfile(false);await saveState(t('backupImported'),true);renderAll();renderSuperAdmin()}catch(e){console.error(e);showToast(t('invalidBackup'))}finally{$('adminImportFile').value=''}}
 async function clearAllHistory(){if(!isSuperAdmin()||!(await appConfirm(t('confirmClearHistory'))))return;state.assignmentLog=[];await saveState(t('adminActivityCleared'),true);renderSuperAdmin()}
@@ -446,7 +434,7 @@ function openAdminConsole(){
  setTimeout(()=>{closeModal('settingsModal');panel.classList.add('show');panel.style.display='flex';},30);
 }
 $('openSuperAdmin').onclick=e=>{e.preventDefault();e.stopImmediatePropagation();openAdminConsole()};
-$('adminReportDate').onchange=updateReportSummary;$('adminDailyPdf').onclick=createDailyPdf;$('adminDailyExcel').onclick=createDailyExcel;$('adminExportBackup').onclick=exportBackup;$('adminExportUsers').onclick=exportUsersCsv;$('adminExportAssignments').onclick=exportAssignmentsCsv;$('adminExportMarkets').onclick=exportMarketsCsv;$('adminPrintReport').onclick=createAdminReport;$('adminImportBackup').onclick=()=>$('adminImportFile').click();$('adminImportFile').onchange=e=>importBackupFile(e.target.files?.[0]);$('adminImportItemsCsv').onclick=()=>$('adminItemsCsvFile').click();$('adminItemsCsvFile').onchange=e=>importItemsCsv(e.target.files?.[0]);$('adminClearHistory').onclick=clearAllHistory;$('adminEmptyRecycle').onclick=emptyRecycleAdmin;$('adminClearPlacements').onclick=clearAllPlacementsAdmin;$('adminClearUsers').onclick=clearUserRegistryAdmin;
+$('adminReportDate').onchange=updateReportSummary;$('adminDailyPdf').onclick=createDailyPdf;$('adminSharePdf').onclick=shareDailyPdf;$('adminDailyExcel').onclick=createDailyExcel;$('adminShareExcel').onclick=shareDailyExcel;$('adminExportBackup').onclick=exportBackup;$('adminExportUsers').onclick=exportUsersCsv;$('adminExportAssignments').onclick=exportAssignmentsCsv;$('adminExportMarkets').onclick=exportMarketsCsv;$('adminPrintReport').onclick=createAdminReport;$('adminImportBackup').onclick=()=>$('adminImportFile').click();$('adminImportFile').onchange=e=>importBackupFile(e.target.files?.[0]);$('adminImportItemsCsv').onclick=()=>$('adminItemsCsvFile').click();$('adminItemsCsvFile').onchange=e=>importItemsCsv(e.target.files?.[0]);$('adminClearHistory').onclick=clearAllHistory;$('adminEmptyRecycle').onclick=emptyRecycleAdmin;$('adminClearPlacements').onclick=clearAllPlacementsAdmin;$('adminClearUsers').onclick=clearUserRegistryAdmin;
 
 function validConfig(){const c=window.SUPABASE_CONFIG||{};return /^https:\/\/.+\.supabase\.co\/?$/.test(String(c.url||''))&&String(c.anonKey||'').length>20&&!String(c.anonKey).includes('PASTE_')}function connectionError(m){$('liveDot').classList.remove('on');$('liveText').textContent=m||t('dbUnavailable')}
 const MARKET_CACHE_KEY='warehouse_market_directory_v1';
