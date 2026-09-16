@@ -1,0 +1,6 @@
+V37 - Direct Share Daily Reports
+- PDF button creates the PDF file directly and opens the device share sheet when Web Share file sharing is supported.
+- Excel button creates the .xls file directly and opens the device share sheet when supported.
+- Reports no longer open a preview/new browser tab first.
+- On browsers/devices that do not support sharing files, the generated report downloads directly as a fallback.
+- PDF uses html2pdf.js so Kurdish/Arabic visual content is preserved better than plain jsPDF text output.

@@ -137,6 +137,7 @@ html:not([data-role="superadmin"]) .superAdminOnly{display:none!important}
 <div class="modalBg" id="zoneEditModal"><div class="modal"><div class="modalHead"><h3 id="zoneEditTitle">Edit Zone</h3><button class="xbtn" data-close="zoneEditModal">×</button></div><div class="field"><label data-i18n="zoneName">Zone name</label><input id="zoneName" maxlength="30"></div><div class="modalBtns"><button class="btn danger" id="deleteZone" data-i18n="delete">Delete</button><button class="btn primary" id="saveZone" data-i18n="saveZone">Save Zone</button></div></div></div>
 <div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js"></script>
 <script src="./supabase-config.js"></script>
 <script>
 const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));const norm=s=>String(s??'').trim();
@@ -339,8 +340,43 @@ function reportEventLabel(x){const map={assign:'Assigned',force_assign:'Force as
 function reportDetail(x){if(x.type==='missing'&&Array.isArray(x.missingItems))return x.missingItems.map(i=>`${i.code||''} ${i.name||''} (missing ${i.missingQty??i.missing??''} / expected ${i.expectedQty??i.expected??''})`).join(' | ');const z=x.zone?.name||x.zone||x.placements?.join?.(', ')||'';return z?`Row: ${z}`:''}
 function dailyReportData(date){const rows=reportRowsForDate(date);return rows.map(x=>({time:new Date(x.at).toLocaleTimeString(),type:reportEventLabel(x),marketCode:x.market?.code||'',marketName:x.market?.name||'',user:x.user_name||deviceProfile(x.device_id)?.name||x.device_id||'',role:x.role||'',detail:reportDetail(x)}))}
 function updateReportSummary(){const d=$('adminReportDate')?.value||new Date().toISOString().slice(0,10),r=reportRowsForDate(d);if($('adminReportSummary'))$('adminReportSummary').textContent=`${r.length} activities • ${r.filter(x=>x.type==='assign'||x.type==='force_assign').length} assigned • ${r.filter(x=>x.type==='done').length} done • ${r.filter(x=>x.type==='missing').length} missing • ${r.filter(x=>x.type==='delete').length} removed`}
-function createDailyExcel(){if(!hasPerm('reports')&&!isSuperAdmin())return;const date=$('adminReportDate').value||new Date().toISOString().slice(0,10),data=dailyReportData(date);const heads=['Time','Activity','Market Code','Market Name','User','Role','Details'];const trs=data.map(r=>`<tr>${[r.time,r.type,r.marketCode,r.marketName,r.user,r.role,r.detail].map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('');const html=`<html><head><meta charset="utf-8"></head><body><h2>ARAM Warehouse — Daily Operations Report</h2><p>${esc(date)}</p><table border="1"><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr>${trs}</table></body></html>`;const blob=new Blob(['\ufeff',html],{type:'application/vnd.ms-excel;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`warehouse-daily-report-${date}.xls`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-function createDailyPdf(){if(!hasPerm('reports')&&!isSuperAdmin())return;const date=$('adminReportDate').value||new Date().toISOString().slice(0,10),data=dailyReportData(date);const grouped={};for(const r of data)(grouped[r.type]??=[]).push(r);const sections=Object.entries(grouped).map(([type,rows])=>`<h2>${esc(type)} (${rows.length})</h2><table><thead><tr><th>Time</th><th>Market</th><th>User</th><th>Role</th><th>Details</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.marketCode+' '+r.marketName)}</td><td>${esc(r.user)}</td><td>${esc(r.role)}</td><td>${esc(r.detail)}</td></tr>`).join('')}</tbody></table>`).join('');const html=`<!doctype html><html dir="${currentLang==='en'?'ltr':'rtl'}"><meta charset="utf-8"><title>Daily Report ${esc(date)}</title><style>body{font-family:Arial,sans-serif;padding:20px;color:#14263a}h1{font-size:22px}h2{font-size:16px;margin-top:22px;background:#eef5fa;padding:8px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccd9e2;padding:6px;font-size:10px;text-align:start}th{background:#f5f8fa}@page{size:A4 landscape;margin:10mm}@media print{.noPrint{display:none}}</style><button class="noPrint" onclick="window.print()">Save as PDF / Print</button><h1>ARAM Warehouse — ${esc(t('dailyReport'))}</h1><p>${esc(date)} • ${data.length} activities</p>${sections||'<p>No activity</p>'}<script>setTimeout(()=>window.print(),350)<\/script></html>`;const w=window.open('','_blank');if(w){w.document.open();w.document.write(html);w.document.close()}else downloadTextFile(`warehouse-daily-report-${date}.html`,html,'text/html;charset=utf-8')}
+async function shareReportFile(file,title){
+  try{
+    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:title});
+      return true;
+    }
+  }catch(err){if(err&&err.name==='AbortError')return false;console.warn('Share failed; downloading instead',err)}
+  const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download=file.name;a.style.display='none';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);return false
+}
+async function createDailyExcel(){
+  if(!hasPerm('reports')&&!isSuperAdmin())return;
+  const date=$('adminReportDate').value||new Date().toISOString().slice(0,10),data=dailyReportData(date);
+  const heads=['Time','Activity','Market Code','Market Name','User','Role','Details'];
+  const trs=data.map(r=>`<tr>${[r.time,r.type,r.marketCode,r.marketName,r.user,r.role,r.detail].map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('');
+  const html=`<html><head><meta charset="utf-8"></head><body><h2>ARAM Warehouse — Daily Operations Report</h2><p>${esc(date)}</p><table border="1"><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr>${trs}</table></body></html>`;
+  const blob=new Blob(['\ufeff',html],{type:'application/vnd.ms-excel'});
+  const file=new File([blob],`warehouse-daily-report-${date}.xls`,{type:'application/vnd.ms-excel'});
+  await shareReportFile(file,`ARAM Warehouse Daily Report — ${date}`)
+}
+function buildDailyPdfElement(date,data){
+  const grouped={};for(const r of data)(grouped[r.type]??=[]).push(r);
+  const sections=Object.entries(grouped).map(([type,rows])=>`<h2>${esc(type)} (${rows.length})</h2><table><thead><tr><th>Time</th><th>Market</th><th>User</th><th>Role</th><th>Details</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.marketCode+' '+r.marketName)}</td><td>${esc(r.user)}</td><td>${esc(r.role)}</td><td>${esc(r.detail)}</td></tr>`).join('')}</tbody></table>`).join('');
+  const el=document.createElement('div');el.dir=currentLang==='en'?'ltr':'rtl';el.style.cssText='font-family:Arial,sans-serif;padding:18px;color:#14263a;background:#fff;width:1050px';
+  el.innerHTML=`<style>h1{font-size:22px}h2{font-size:16px;margin-top:20px;background:#eef5fa;padding:8px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccd9e2;padding:6px;font-size:10px;text-align:start}th{background:#f5f8fa}</style><h1>ARAM Warehouse — ${esc(t('dailyReport'))}</h1><p>${esc(date)} • ${data.length} activities</p>${sections||'<p>No activity</p>'}`;
+  return el
+}
+async function createDailyPdf(){
+  if(!hasPerm('reports')&&!isSuperAdmin())return;
+  const date=$('adminReportDate').value||new Date().toISOString().slice(0,10),data=dailyReportData(date),name=`warehouse-daily-report-${date}.pdf`;
+  if(!window.html2pdf){alert('PDF generator is still loading. Please try again.');return}
+  const el=buildDailyPdfElement(date,data);document.body.appendChild(el);el.style.position='fixed';el.style.left='-20000px';el.style.top='0';
+  try{
+    const blob=await html2pdf().set({margin:8,filename:name,image:{type:'jpeg',quality:.96},html2canvas:{scale:1.5,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},pagebreak:{mode:['css','legacy']}}).from(el).outputPdf('blob');
+    const file=new File([blob],name,{type:'application/pdf'});
+    await shareReportFile(file,`ARAM Warehouse Daily Report — ${date}`)
+  }finally{el.remove()}
+}
 function createAdminReport(){createDailyPdf()}
 async function importBackupFile(file){if(!isSuperAdmin()||!file)return;try{const obj=JSON.parse(await file.text());const source=obj&&obj.state?obj.state:obj;if(!source||typeof source!=='object'||!Array.isArray(source.zones))throw new Error('invalid');if(!(await appConfirm(t('confirmImportBackup'))))return;state=normalizeState(source);activeZoneId=state.zones[0]?.id||null;touchCurrentDeviceProfile(false);await saveState(t('backupImported'),true);renderAll();renderSuperAdmin()}catch(e){console.error(e);showToast(t('invalidBackup'))}finally{$('adminImportFile').value=''}}
 async function clearAllHistory(){if(!isSuperAdmin()||!(await appConfirm(t('confirmClearHistory'))))return;state.assignmentLog=[];await saveState(t('adminActivityCleared'),true);renderSuperAdmin()}
