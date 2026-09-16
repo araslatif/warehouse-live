@@ -1,0 +1,5 @@
+V38 - Numeric Zone Labels
+- Existing single-letter zone labels A-Z are displayed/migrated to 1-26 while preserving zone IDs and assignments.
+- Default zones are 1, 2, 3.
+- Newly created zones automatically use the next available number.
+- Existing selected-zone persistence remains unchanged.
