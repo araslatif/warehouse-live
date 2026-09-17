@@ -1,0 +1,9 @@
+V47 FAST STARTUP
+- Added local warehouse-state cache for immediate first paint.
+- Cached zones, placements, checks, recycle bin, profiles and activity render before Supabase responds.
+- Supabase snapshot refreshes authoritative data in background.
+- Realtime connection starts without waiting for large CSV/catalog loads.
+- Market directory cache is used immediately; bundled CSV refresh uses browser cache.
+- Full Supabase market-directory reconciliation is delayed until browser idle.
+- 6,642-item catalog loads in background and no longer blocks startup.
+- Hardware/device-name detection no longer blocks startup.
