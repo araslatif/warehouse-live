@@ -1,0 +1,8 @@
+V48 — AUTO DATA RENDER FIX
+
+- Fixes startup case where data only appeared after refresh or changing role.
+- Added one authoritative render path for cache, Supabase snapshot, and realtime updates.
+- Forces a safe post-paint render after snapshot arrival so the initial empty UI cannot remain stuck.
+- Preserves the active role/page and selected zone while applying loaded data.
+- Supabase snapshot automatically updates the current screen; no manual refresh or role switch required.
+- Keeps V47 fast cache-first startup and background synchronization.
