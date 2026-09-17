@@ -1,0 +1,19 @@
+V49 — CHECKING + COMPLETE MARKET DIRECTORY FIX
+
+1. Fixed checker actions (Done / Missing / Not checked):
+   - Restored the missing legacyMarketKey compatibility helper that caused a runtime error when saving a check.
+   - Check lookup now supports both the new exact market identity and old code-only check keys.
+   - Missing-item editor now loads existing check data through the compatibility lookup.
+
+2. Fixed duplicate-code market identity:
+   - Market records are identified by code + normalized name, not code alone.
+   - Different markets that share a code are no longer collapsed in search/suggestions/state normalization.
+   - Existing code-only check records remain readable for backward compatibility.
+
+3. Full bundled directory preserved:
+   - Bundled CSV remains the master local directory and is merged with Supabase/cache without dropping distinct CSV rows.
+   - Verified bundled CSV contains 3,893 records.
+   - Verified code 936 has two records, including Market dadwar / shorsh.
+   - Verified code 9325 exists (market xoshnawati/qalate nwe).
+
+4. V48 fast-start architecture retained.
