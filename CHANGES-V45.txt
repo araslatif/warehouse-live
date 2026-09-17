@@ -1,0 +1,7 @@
+V45
+- Added جەردنەکراو / Not checked action inside Market Information.
+- Clicking a searched market clears the search field automatically.
+- Connected-device cards now use different background colors by role.
+- Fixed market-directory completeness: bundled 3,893-row CSV is now loaded and merged with Supabase.
+- Fixed duplicate market-code identity: markets sharing a code but having different names are no longer collapsed into one record.
+- Example verified: code 936 contains both Rashwan\kurani Ankawa and Market dadwar / shorsh.
