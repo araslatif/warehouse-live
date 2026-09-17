@@ -1,0 +1,6 @@
+V46 DATA LOAD HOTFIX
+- Restored backward-compatible market identity for all existing warehouse_state data.
+- Duplicate CSV rows are preserved in the searchable directory with a separate directory-only key.
+- Bundled market CSV loads before Supabase snapshot so search data is available immediately.
+- Added relative and root-path CSV loading fallback.
+- Kept V45 unchecked button, search clear, and connected-device role colors.
