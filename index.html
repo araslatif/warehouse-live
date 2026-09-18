@@ -482,7 +482,24 @@ function marketsFromCsv(text){const rows=parseCsvRows(text);if(!rows.length)retu
 function mergeMarketDirectories(...lists){const map=new Map();for(const list of lists)for(const m of list||[]){const clean={name:norm(m.name),code:normalizeDigits(norm(m.code)),address:norm(m.address)};if(!clean.name&&!clean.code)continue;const k=directoryMarketKey(clean);if(!map.has(k))map.set(k,clean);else if(!map.get(k).address&&clean.address)map.get(k).address=clean.address}return [...map.values()]}
 async function loadBundledMarkets(){for(const url of ['./Bruska-Market-Directory-3893.csv','/Bruska-Market-Directory-3893.csv']){try{const r=await fetch(url,{cache:'force-cache'});if(!r.ok)continue;const list=marketsFromCsv(await r.text());if(list.length){console.info('Bundled market CSV loaded',list.length);return list}}catch(e){console.warn('Bundled market CSV path failed',url,e)}}console.warn('Bundled market CSV could not be loaded');return[]}
 async function loadAllMarkets(){const csvMarkets=await loadBundledMarkets();const dbMarkets=[];const pageSize=1000;try{for(let from=0;;from+=pageSize){const {data,error}=await db.from('markets').select('name,code,address').order('id',{ascending:true}).range(from,from+pageSize-1);if(error)throw error;dbMarkets.push(...(data||[]));if(!data||data.length<pageSize)break}}catch(e){console.warn('Supabase market directory refresh failed; using bundled CSV',e)}markets=mergeMarketDirectories(csvMarkets,dbMarkets,markets);saveMarketCache();console.info('Market directory loaded',markets.length,'records; CSV',csvMarkets.length,'DB',dbMarkets.length)}
-let startupDataReady=false,startupRenderToken=0;
+let startupDataReady=false,startupRenderToken=0,generalRenderGeneration=0;
+// V50: General is a single-screen role. Reconcile that screen after each startup/state
+// transition so a fast cached first paint can never remain stale after Supabase arrives.
+function stabilizeGeneralView(reason='data'){
+  if(currentRole!=='general')return;
+  const gen=++generalRenderGeneration;
+  const repaint=()=>{
+    if(gen!==generalRenderGeneration||currentRole!=='general')return;
+    try{
+      document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id==='page-placed'));
+      document.querySelectorAll('.navbtn').forEach(x=>x.classList.toggle('active',x.dataset.page==='placed'));
+      renderPlaced();updateLive();
+    }catch(e){console.warn('General view reconcile failed',reason,e)}
+  };
+  repaint();
+  requestAnimationFrame(()=>requestAnimationFrame(repaint));
+  [60,180,450,900].forEach(ms=>setTimeout(repaint,ms));
+}
 function renderCurrentDataNow(reason='data'){
   const token=++startupRenderToken;
   const savedZoneId=localStorage.getItem(LAST_ZONE_KEY);
@@ -494,6 +511,7 @@ function renderCurrentDataNow(reason='data'){
   paint();
   requestAnimationFrame(()=>requestAnimationFrame(paint));
   setTimeout(paint,120);
+  stabilizeGeneralView(reason);
   startupDataReady=true;
   try{window.dispatchEvent(new CustomEvent('warehouse:dataready',{detail:{reason,revision}}))}catch(e){}
 }
@@ -509,7 +527,7 @@ async function initApp(){
  // Hardware detection is cosmetic; resolve it in parallel.
  resolveHardwareName().then(()=>{try{touchCurrentDeviceProfile(false);renderSettings()}catch(e){}}).catch(()=>{});
  // Local bundled directory refresh runs in background and uses the browser HTTP cache.
- loadBundledMarkets().then(bundled=>{if(bundled.length){markets=mergeMarketDirectories(bundled,markets);saveMarketCache();if(isAssigner())renderZoneSuggestions();if($('placedInput')?.value)renderPlaced()}}).catch(e=>console.warn('Background market CSV load skipped',e));
+ loadBundledMarkets().then(bundled=>{if(bundled.length){markets=mergeMarketDirectories(bundled,markets);saveMarketCache();if(isAssigner())renderZoneSuggestions();if($('placedInput')?.value)renderPlaced();stabilizeGeneralView('bundled-markets')}}).catch(e=>console.warn('Background market CSV load skipped',e));
  if(!validConfig()){connectionError(t('setupRequired'));return}
  const c=window.SUPABASE_CONFIG;db=window.supabase.createClient(c.url,c.anonKey,{auth:{persistSession:false,autoRefreshToken:false}});
  // Start realtime immediately; authoritative snapshot replaces cache when it arrives.
@@ -520,7 +538,11 @@ async function initApp(){
  // Full remote market-directory reconciliation is deliberately delayed until the UI is usable.
  const refreshMarkets=()=>loadAllMarkets().then(()=>{if(isAssigner())renderZoneSuggestions()}).catch(e=>console.error('Market directory background refresh failed',e));
  if('requestIdleCallback' in window)requestIdleCallback(refreshMarkets,{timeout:5000});else setTimeout(refreshMarkets,1800);
-}initApp();
+}
+window.addEventListener('pageshow',()=>stabilizeGeneralView('pageshow'));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)stabilizeGeneralView('visible')});
+window.addEventListener('warehouse:dataready',()=>stabilizeGeneralView('dataready-event'));
+initApp();
 </script>
 <!-- V31: robust item-code lookup/autocomplete; checker zone navigation hidden -->
 </body>

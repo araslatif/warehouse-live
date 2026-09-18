@@ -1,0 +1,8 @@
+V50 - GENERAL ROLE AUTO-LOAD STABILITY FIX
+
+- Preserves V48/V49 fast cached startup architecture.
+- Fixes General role occasionally showing no/stale placements until role switching.
+- Adds a General-only post-sync render reconciliation after cache, Supabase snapshot, realtime data-ready, and bundled directory refresh.
+- Re-renders the General placed-market screen across the first browser paint window without changing roles.
+- Adds pageshow/visibility recovery for mobile browser resume/back-forward cache cases.
+- Does not add network waits to startup and does not change checking or market-directory identity logic.
