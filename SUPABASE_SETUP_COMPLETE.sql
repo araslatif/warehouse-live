@@ -4260,4 +4260,21 @@ select v.name,v.code,v.address from (values
 ) as v(name,code,address)
 where not exists (select 1 from public.markets m where m.name=v.name and m.code=v.code and m.address=v.address);
 
+
+-- Seed the ten defaults once; preserve existing driver lists and all warehouse data.
+do $$
+declare defaults jsonb := '[{"id": "default_driver_0", "name": "احسان", "markets": []}, {"id": "default_driver_1", "name": "کۆژین", "markets": []}, {"id": "default_driver_2", "name": "بیلال", "markets": []}, {"id": "default_driver_3", "name": "زانا", "markets": []}, {"id": "default_driver_4", "name": "گۆران", "markets": []}, {"id": "default_driver_5", "name": "سەلمان", "markets": []}, {"id": "default_driver_6", "name": "بەژدار", "markets": []}, {"id": "default_driver_7", "name": "عبداللە", "markets": []}, {"id": "default_driver_8", "name": "دیدار", "markets": []}, {"id": "default_driver_9", "name": "زیاد", "markets": []}]'::jsonb; d jsonb; current_drivers jsonb;
+begin
+  if exists(select 1 from public.warehouse_state where id=1 and coalesce(state->>'driverDefaultsSeeded','false') <> 'true') then
+    select case when jsonb_typeof(state->'drivers')='array' then state->'drivers' else '[]'::jsonb end
+      into current_drivers from public.warehouse_state where id=1 for update;
+    for d in select value from jsonb_array_elements(defaults) loop
+      if not exists(select 1 from jsonb_array_elements(current_drivers) x where x->>'name'=d->>'name') then
+        current_drivers := current_drivers || jsonb_build_array(d);
+      end if;
+    end loop;
+    update public.warehouse_state set state=jsonb_set(jsonb_set(state,'{drivers}',current_drivers),'{driverDefaultsSeeded}','true'::jsonb),revision=revision+1,updated_at=now() where id=1;
+  end if;
+end $$;
+
 commit;
