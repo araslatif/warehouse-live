@@ -1,0 +1,15 @@
+V51 UPDATE
+
+EXISTING DATABASE: Run IMPORT_MARKETS_4191.sql in Supabase SQL Editor. It imports all 4,191 source records, preserves text codes and does not delete existing markets or placements. Existing codes without leading zeros remain separate records; they are not silently reassigned.
+NEW DATABASE: Run SUPABASE_SETUP_COMPLETE.sql instead.
+
+Deploy the public folder. Root and public app versions now match. Existing public Supabase configuration is preserved.
+
+Header starts collapsed. Tap the small arrow or swipe down on the narrow blue toolbar to reveal it; swipe up on the toolbar/header to hide it.
+Zones remain on one horizontally scrollable line.
+Menu button opens the sidebar. The matching inside button, outside backdrop tap or Escape closes it.
+
+Live database import has NOT been executed by this package.
+
+V52 DRIVERS
+Use the sidebar to add driver names. Click a driver to open their list; search all markets and click to assign. A market can belong to multiple drivers; zone assignments stay independent. Rows show live zone status. Drag the dotted handle (touch/mouse) or use arrows to reorder. Choose sorting and Save this order to persist it. Users with assign_market or manage_users can edit; others can view. Driver lists and order persist in warehouse state and backups. No additional SQL migration is required for driver lists. Deploy public/.
