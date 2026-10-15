@@ -1,3 +1,5 @@
+CURRENT VERSION: V63. Start with START_HERE_V63.txt. This fixes the pending-patch startup crash without clearing local edits.
+
 CURRENT VERSION: V62. Start with START_HERE_V62.txt. Earlier entries below are version history; V61 SQL is optional when the original save API is still installed.
 
 V51 UPDATE
@@ -42,3 +44,5 @@ Every save (adding, assigning, editing, checking, driver changes and reordering)
 
 V62 COMPATIBILITY REPAIR
 Live read-only inspection found the database reachable (revision 600) but get_warehouse_sync_snapshot_v61 missing (PGRST202). V62 detects this and uses the existing save_warehouse_state API, preserving pending actions from prior versions. It reads current data, merges actions, saves and verifies persisted receipts before marking synced. V61 atomic conflict checks are used automatically when installed; legacy compatibility cannot provide the same atomic guarantees under simultaneous old-client writes. Background reads continue while saves retry, with pending local actions overlaid. The banner now shows the actual server error. Deploy public/ to all devices and refresh; do not clear browser storage before pending changes sync. No new SQL is required for a server still using its original working save_warehouse_state function. The optional V61 upgrade remains recommended for stronger concurrency protection. No successful live write test was performed.
+
+V63: Move pending-action replay after all helper constants initialize and after initial state normalization. Preserve queued edits. Catch malformed-action replay errors so startup can continue; failed operations remain queued for recovery.

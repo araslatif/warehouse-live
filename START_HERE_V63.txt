@@ -1,0 +1,11 @@
+V63 — STARTUP / CONNECTION FIX
+
+An initialization-order error in the previous update could stop startup when pending state-patch edits were stored on a device: Cannot access cloneSync before initialization.
+
+1. Deploy the included public folder.
+2. Reload every device. Do NOT clear browser storage: queued edits are preserved.
+3. Keep the original device online until its pending-sync notice clears.
+
+V63 initializes all patch helpers before replaying queued changes. A damaged queued operation is retained for recovery instead of crashing startup. Existing server-API compatibility is preserved.
+
+Live read-only checks confirmed the server is reachable, the state row has revision 600, and 12 zones are stored. No live database write was performed for this repair. Full-script startup was tested with both cached state and pending patches.
