@@ -1,0 +1,5 @@
+V64 — IMMEDIATE DRIVER LOADING / UNDO FEEDBACK
+
+Deploy public/ and reload all devices without clearing browser storage.
+
+Driver loading buttons now use a delegated handler that reads the current driver/market state. Loading and undo repaint the visible card immediately, without waiting for a server response or a full settings/page render. A local 250ms view check redraws only when data/version changes; it does not make extra server requests. Existing Realtime and server polling continue. Queued saves and pending edits remain intact. No SQL changes are needed for this UI repair.

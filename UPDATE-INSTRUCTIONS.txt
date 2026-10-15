@@ -1,3 +1,5 @@
+CURRENT VERSION: V64. See START_HERE_V64.txt.
+
 CURRENT VERSION: V63. Start with START_HERE_V63.txt. This fixes the pending-patch startup crash without clearing local edits.
 
 CURRENT VERSION: V62. Start with START_HERE_V62.txt. Earlier entries below are version history; V61 SQL is optional when the original save API is still installed.
