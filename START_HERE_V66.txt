@@ -1,0 +1,7 @@
+V66 — DRIVER LOADING SESSION AND ZONE POSITIONS
+
+Deploy public/ and reload without clearing storage. No SQL update needed.
+
+On the placed-markets page the first Load uses a uniquely assigned driver, or asks for a driver if there is no single assignment. That driver remains selected on this device until Finish loading, including after Undo or refresh. After Finish, the next placed-page load always asks for a fresh driver selection. Finish ends only the session; it does not undo loaded markets. Loading from a driver page always uses that specific driver.
+
+Each zone has its own stable numbered slots. Existing markets receive slots automatically. Add Empty position creates a new numbered blank. Tap Add market here on a blank, then search/add an existing or custom market. Normal additions append at the end. Removing/loading a market leaves its position empty; Undo/restore can reuse its prior slot. Zone slots synchronize with existing shared state.
