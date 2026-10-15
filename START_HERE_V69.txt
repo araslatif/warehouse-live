@@ -1,0 +1,5 @@
+V69 — Automatic refresh every two seconds
+
+Deploy public/ and reload all devices without clearing storage. Active visible devices request the latest server snapshot every two seconds. Identical data does not redraw lists. Requests do not overlap; edits and dragging temporarily defer refresh until the next tick. Realtime updates remain enabled. Background devices check immediately on returning to the app. Network latency may delay delivery.
+
+Automatic receive and startup regressions pass.
