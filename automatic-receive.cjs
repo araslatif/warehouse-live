@@ -5,12 +5,12 @@ assert(html.includes('restRefreshTimer=setInterval(()=>checkServerRevision(true)
 let now=10000,reads=0,renders=0,server={revision:2,state:{name:'peer edit'}};
 const ctx={document:{hidden:false},Date:{now:()=>now},Promise,JSON,Number,console,
  snapshotRequest:null,revisionProbe:null,lastFullSnapshotAt:0,lastRevisionCheckAt:0,lastMarketDirectoryAt:0,
- serverSnapshotLoaded:true,realtimeHealthy:true,revision:1,state:{name:'old'},syncMutationVersion:0,
+ serverNoticeVersion:0,serverUpdatePending:false,serverUpdateTimer:null,directoryUpdatePending:false,marketDirectoryRequest:null,lastRenderedSnapshotSignature:'',clearTimeout(){},setTimeout(){return 1},serverSnapshotLoaded:true,realtimeHealthy:true,revision:1,state:{name:'old'},syncMutationVersion:0,
  localSaveCount:0,customMarketSaving:false,supplySaveBusy:false,driverDrag:false,serverConnectionProblem:false,
  remoteReadClient:()=>({from:()=>({select:()=>({eq:()=>({single:async()=>{reads++;return {data:server}}})})})}),
  normalizeState:x=>x,replayPendingWarehouseActions:x=>x,refreshPendingNotice(){},t:x=>x,
  connectionError:()=>assert.fail('unexpected connection error'),loadAllMarkets:async()=>{},
- applyServerSnapshot(data){ctx.state=data.state;ctx.revision=data.revision;renders++;return true}};
+ applyServerSnapshot(data){ctx.state=data.state;ctx.revision=data.revision;ctx.lastRenderedSnapshotSignature=JSON.stringify(ctx.state);renders++;return true}};
 vm.createContext(ctx);vm.runInContext(['function loadSnapshot(','function checkServerRevision('].map(p=>lines.find(l=>l.startsWith(p))).join('\n'),ctx);
 (async()=>{
  await ctx.checkServerRevision();assert.equal(ctx.state.name,'peer edit');assert.equal(renders,1);

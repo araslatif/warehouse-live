@@ -1,0 +1,14 @@
+V70 — Database-originated push updates
+
+1. In the existing Supabase project, open SQL Editor, paste ENABLE_SERVER_PUSH_V70.sql and Run once. It adds notification triggers only. It does not change the working save RPCs, permissions, or existing market data. Both confirmation rows should show enabled = O.
+2. Deploy the entire public/ folder, including vendor/. Keep your existing supabase-config.js.
+3. Reload the app on every device. Do not clear storage; pending edits may be stored there.
+4. On device A, edit and wait for green/saved. Device B should update while the app is open without pressing Refresh.
+
+After a warehouse transaction commits, the database broadcasts a tiny revision notification on warehouse-live/state-changed. Devices fetch canonical data using existing read permissions, overlay their unsaved edits, and repaint changed views. Markets-table changes notify directory refresh too. Notifications during saves or in-flight reads remain pending and retry. The two-second snapshot fallback remains active. WebSockets require an active online app; returning to the app triggers a fresh check.
+
+The SDK is bundled locally, removing the runtime CDN dependency. Notification failure is caught by the SQL trigger so it cannot break existing saves. Never run SYNC_V61_REQUIRED.sql for this update: it is unrelated to enabling notifications.
+
+Validated: all seven packaged mock-network regression suites, including actual live-event callbacks, delayed notification races and pending-write protection. SQL was not applied to the live server and live two-device delivery has not been verified from this environment.
+
+Reference: https://supabase.com/docs/guides/realtime/broadcast
