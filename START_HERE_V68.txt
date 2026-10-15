@@ -1,0 +1,7 @@
+V68 — Placed-market search and zone indices
+
+Deploy public/ and reload each device without clearing storage.
+
+Placed-market searches show assigned matches first, including partial-name matches ahead of unassigned exact-name matches. Each zone badge replaces the zone label with the market's original position in red and retains the zone number. Positions come from persistent zone slots, including empty positions; markets in multiple zones show their separate position in each zone.
+
+All six packaged regression tests pass. Server save and automatic receive logic unchanged.

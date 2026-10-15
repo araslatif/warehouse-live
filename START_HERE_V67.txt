@@ -1,0 +1,9 @@
+V67 — Automatic updates on other devices
+
+Deploy the contents of public/ using your existing deployment process. Reload the app on every device to activate this update. Do not clear local storage: it may contain unsaved edits.
+
+Receive-only changes: active devices check the server revision every second, independently of WebSocket connection status. A full background snapshot every four seconds also recovers changes if a revision notification is missed or unchanged. Unchanged snapshots do not redraw lists. Reads skipped during edits or dragging retry on subsequent ticks. Pending local actions remain overlaid on incoming data. The working save path, loading sessions and zone positions are unchanged.
+
+Automatic updates require an active app and network connection. Returning to the app or reconnecting triggers an immediate snapshot check. Existing Refresh remains available.
+
+Validated with packaged mocked-network regressions; no live database writes or live two-device test were performed.
