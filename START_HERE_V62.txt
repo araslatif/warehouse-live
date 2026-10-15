@@ -1,0 +1,14 @@
+V62 — FIX FOR SERVER SAVES AND SECOND-DEVICE LOADING
+
+Read-only live checks confirmed: warehouse_state is reachable; get_warehouse_sync_snapshot_v61 is missing. V61 could therefore keep edits queued on one device.
+
+1. Deploy the included public folder.
+2. Reload the app on EVERY device. Do not clear browser storage: it contains your pending changes.
+3. Keep the device with pending edits open and connected. V62 retries using the original save API when V61 functions are missing.
+4. Check that the pending banner disappears and the top status says Saved to server. A second device should then receive the saved data.
+
+The app verifies saved records before marking changes synced. If it cannot save, it displays the actual server error.
+
+No additional SQL is needed for compatibility with an original working save_warehouse_state function. If you install SYNC_V61_REQUIRED.sql, the app automatically uses its stronger atomic concurrency checks instead. The original API cannot provide the same simultaneous-write guarantees.
+
+Live read-only checks succeeded. Compatibility and second-device behavior were tested locally with simulated server responses; no successful live write test was performed.
