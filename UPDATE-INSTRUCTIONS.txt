@@ -1,3 +1,5 @@
+CURRENT VERSION: V65. See START_HERE_V65.txt.
+
 CURRENT VERSION: V64. See START_HERE_V64.txt.
 
 CURRENT VERSION: V63. Start with START_HERE_V63.txt. This fixes the pending-patch startup crash without clearing local edits.

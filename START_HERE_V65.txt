@@ -1,0 +1,7 @@
+V65 — SYNC COLOR AND COMPACT BOTTOM NAVIGATION
+
+Deploy public/ and reload devices without clearing browser storage.
+
+The refresh button is red while local changes are pending, while refreshing, or after a connection/save error. It becomes green after server confirmation and with no local changes waiting. The old in-flow sync banner and visible changing status text are removed, so sync status cannot push market cards down. Button title/accessibility label retains the status/error.
+
+The bottom two-button navigation is 46px plus device safe-area padding. Every main list ends with a spacer based on the navigation actual height plus 18px, keeping the last market above the bar. No SQL changes.
