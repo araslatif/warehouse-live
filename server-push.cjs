@@ -20,7 +20,7 @@ const settle=async()=>{await new Promise(r=>setImmediate(r));if(ctx.revisionProb
  resolver=true;ctx.requestServerUpdate();await new Promise(r=>setImmediate(r));const finish=resolver;
  ctx.requestServerUpdate();finish({data:{revision:12,state:{value:'older in-flight'}}});resolver=null;await settle();assert(ctx.serverUpdatePending);
  server={revision:13,state:{value:'newest'}};await ctx.checkServerRevision(true);assert.equal(ctx.state.value,'newest');assert(!ctx.serverUpdatePending);
- handlers['broadcast:directory-changed']({payload:{table:'markets'}});await settle();assert.equal(ctx.directoryReads,1);
+ const beforeDirectory=ctx.directoryReads||0;handlers['broadcast:directory-changed']({payload:{table:'markets'}});await settle();assert.equal(ctx.directoryReads,beforeDirectory+1);
  assert(html.includes('./vendor/supabase-2.118.0.js'));assert(fs.existsSync(path.join(root,'public/vendor/supabase-2.118.0.js')));
  const sql=fs.readFileSync(path.join(root,'ENABLE_SERVER_PUSH_V70.sql'),'utf8');assert(sql.includes("'state-changed','warehouse-live',false"));assert(!sql.includes('save_warehouse_state('));
  console.log('PASS actual receive handlers: immediate broadcast/CDC reads, same-revision hints, busy retry, notification during in-flight read, directory events and bundled SDK; SQL leaves save RPCs unchanged');

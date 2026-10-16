@@ -1,0 +1,9 @@
+V71 — Automatic browser refresh every two seconds
+
+Deploy the entire public/ folder, including vendor/, then reload every browser tab/device. No new SQL is required for two-second polling. Keep existing server configuration and do not clear browser storage.
+
+The timer now uses forced snapshots with list repainting, like the manual Refresh button, and starts the full market-directory refresh too. Existing in-flight requests are reused. The app no longer skips refresh because a tab is hidden. Focus, pageshow, online and returning to the tab trigger immediate checks. Reads skipped during edits retry later, and pending local actions remain overlaid. No page reload or button click is needed.
+
+Browsers may throttle or suspend timers in inactive tabs, minimized windows or sleeping phones. Exact two-second execution cannot be guaranteed there; a foreground online tab targets two seconds and returning triggers an immediate check. Reference: https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout
+
+All seven mocked-network regression suites pass, including the actual two-second interval callback with document.hidden=true. Live two-device delivery has not been verified here.
