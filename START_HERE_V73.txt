@@ -1,0 +1,11 @@
+V73 — Compact controls, zone order and individual passwords
+
+Deploy the entire public/ folder and reload every device without clearing storage. Install ARAM Warehouse 73.0 over 72.1 on Android. No additional SQL is required.
+
+The zone and placed-list headings move into the existing compact top bar. The top ⋮ menu contains zone tools, including Reindex from 1 and Auto reindex. Reindex affects the selected zone only. Automatic mode removes empty positions after deletion/loading and appends ordinary new markets without gaps. Turn it off to preserve/fill empty positions. Use ＋ on any market to insert before it, then choose the new market through the existing code search.
+
+Super admin > expand a user > Change password. Confirm the new password and save. A targeted queued operation sends the hash to the shared server; red/green refresh state indicates pending/confirmed save. On receiving the change, the target user must enter the new personal password. Other user passwords are unchanged. The app models users as device profiles; this adds a per-profile app access password, not a Supabase Auth credential reset. Existing role access codes are separate.
+
+Android background sync is enabled by default and controlled from Settings only; the native top bar has been removed.
+
+Validation: nine browser regression suites including full mocked-network DOM integration, plus native adapter/settings tests and APK compilation/signature checks. Real phone UI/installation and live password writes were not tested.

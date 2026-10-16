@@ -1,0 +1,15 @@
+V77 - Loading order, reports and safe recovery
+
+Deploy public/ and reload the browser. Install APK 77.0 over the existing Android app. No SQL changes are needed. Update all devices to preserve the new list ordering consistently.
+
+- The insert-before button now uses an upward arrow to a line, plus the label Before (پێش).
+- Loading keeps the market's default placed-list position, including after server acknowledgement and Undo. Driver lists sorted by placement also retain that grouping after loading. Successful loading clears the placed-market and driver search boxes. Physical zone removal/reindexing and loading sessions retain their existing behavior.
+- PDF uses locally bundled jsPDF/AutoTable and an embedded font with Kurdish, Arabic and Latin glyphs. Reports use selectable data sections, columns, title, paper (A4/A3/Letter/Legal), orientation and text size. Headers repeat across pages; every page has a numbered footer. Selected empty sections explicitly say no records. Excel uses the same section selection; PDF column settings apply only to PDF.
+- Date, activity, user and role filters apply to history. Market filtering applies to placements, drivers, loaded markets and the directory. Other sections show their current snapshot. Placement and driver indices remain original indices when filtering.
+- Browser download/share helpers are restored. Android file exports now wait for actual native save success and report cancellation/failure instead of silently claiming a backup was saved.
+- Backups include state, full market directory, item catalog, server revision, pending operations and a SHA-256 integrity checksum. State includes local pending effects; pending actions are included for diagnosis and are not blindly replayed during restore.
+- Restore validates file structure/checksum, previews counts and requires confirmation. Older compatible backups without checksums are accepted with a legacy notice. A recovery copy is written to IndexedDB before any restore; inability to save that copy cancels restore. The five most recent recovery copies are retained locally. Recovery copy button exports the latest one.
+- Restore is a SAFE MERGE, not a destructive rollback. Current records, passwords, permissions, market placements/status and order win conflicts. Missing zones, markets, driver assignments, directory records, catalog items and records are recovered without duplicates. Old deletes or password changes are not replayed. Keep downloaded backups outside the app; local recovery copies can disappear if app/browser data is cleared.
+- Restores use the existing durable action queue and server-save path. The interface distinguishes confirmed server save from pending/offline sync. Existing pending operations are preserved.
+
+Validation: 13 browser suites (all network requests mocked), native adapter tests, real multi-page PDF generation and rendered-page checks, Android compilation and APK signature verification. No real database writes were made. Physical-device UI and document-provider save/restore still need testing.

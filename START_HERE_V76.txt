@@ -1,0 +1,9 @@
+V76 — Consistent search feedback
+
+Deploy public/ and reload browsers; install APK 76.0 over the existing Android app. No new SQL is needed.
+
+Exact market code/full-name matches display green and bold with an Exact match label. Unplaced status displays red. Exact + unplaced shows green title and red status. Partial unplaced names display red. Loaded cards keep their previous supplied styling/status.
+
+Covers zone/driver suggestions, placed-market search and item catalog lookup. Matching normalizes case, whitespace, Unicode NFC and digit forms while preserving leading-zero distinctions. Main placed-market results retain placement priority, with exactness used inside each group. Zone and driver search prioritize exact matches. Enter uses normalized code/name matching; ambiguous matches require selection.
+
+Twelve browser regression suites and native bridge tests pass, including full mocked-server DOM/color tests and search-specific matching tests. APK signing verified. Physical phone UI still needs testing; tests did not write to the real database.

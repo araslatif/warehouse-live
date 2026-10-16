@@ -1,0 +1,11 @@
+V74 — Unplaced loading confirmation and animated driver drag
+
+Deploy public/ and reload every browser device. Install ARAM Warehouse 74.0 over the existing Android app. No new SQL is required.
+
+An unplaced market prompts before loading; confirm to force loading or cancel to leave it unchanged. No driver session changes until confirmation. Undo does not show the warning.
+
+Driver list > Manual order > hold ⠿ and drag. A floating card follows the finger, rows animate around a dashed insertion gap, and the list auto-scrolls at its edges. Release to save. The temporary bottom dock allows dropping onto another driver or opening a driver chooser. Transfers change list membership only; zone assignment and actual supplied-for-car records remain unchanged.
+
+Moves use durable keyed actions and are merged against the latest shared state; no whole-list overwrite is used for dragging. Cancelled gestures do not save. Update all clients so offline queued moves replay correctly.
+
+Validated with ten browser regression suites, the native settings/cache suite and full mocked-server DOM pointer tests. APK signing verified; real phone touch/installation remains untested.

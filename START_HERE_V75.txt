@@ -1,0 +1,11 @@
+V75 — Default auto reindex, hidden driver tools and smoother drag
+
+Deploy public/ and reload all browsers. Install Android 75.0 over the existing app. No new SQL is required.
+
+All existing zones enable auto reindex once during upgrade and sync the migration using the existing durable queue. New zones default to enabled. A later per-zone opt-out is respected. Existing gaps are removed; assigned markets remain.
+
+Driver tools from the screenshot move into the compact top ⋮ menu. Search stays visible. Suggestion cards use compact 35px rows, smaller text and one-line status; driver list cards are compacted too.
+
+Drag targeting ignores animated row translations to avoid jitter. The floating held card follows the pointer and tilts slightly; releasing settles it into its destination before saving. Reduced-motion mode commits immediately. Cancellation/app switching aborts an unsettled move. Driver transfer remains supported.
+
+Eleven browser regression suites and native bridge tests pass, including full DOM tests with mocked network/geometry, default migration, compact cards and deferred drop animation. APK signing verified. Physical-phone UI/animation still needs testing. No live shared-database writes were performed by tests.
