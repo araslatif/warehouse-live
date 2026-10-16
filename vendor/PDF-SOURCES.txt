@@ -1,0 +1,5 @@
+jsPDF 2.5.2 (MIT): https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js
+jsPDF-AutoTable 3.8.4 (MIT): https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js
+warehouse-pdf-tables.js is the unmodified AutoTable UMD bundle followed by a local loader-ready flag.
+Noto Sans Arabic (SIL OFL 1.1): https://github.com/google/fonts/tree/main/ofl/notosansarabic
+The supplied variable font was instantiated at weight 400, width 100 with FontTools; warehouse-pdf-font.js embeds the resulting TTF as base64. It includes Arabic/Kurdish and Latin. See NOTO-OFL.txt.
