@@ -1,0 +1,29 @@
+V84 — Own-assignment deletion, repeated markets, visible check status/photos and pinch zoom
+
+ASSIGNER DELETION
+Market Assigner / وەسڵدانەر can remove only placements assigned by that same saved user/device identity. Each new placement, including supplementary and custom-market placements, records its assigning ID and time. For older records without this metadata the app uses the matching market/zone assignment history; a supplementary record is matched to its specific action ID. Unknown ownership stays protected.
+Own entries have a remove button in Zones. If Placed markets is enabled for this role, its remove action removes only this user's placements, leaving every other user's entry intact. Delete-own is a separate superadmin app-control feature. Driver-list browsing remains read-only for General, Assigner and Checker, as in V83.
+Removal is a durable zone-entry action. It is rechecked against ownership in the latest server snapshot before merge, protects another user's entry if ownership changed meanwhile, and moves just the removed entry into recycle with owner/position metadata. Replay cannot duplicate a removal. Explicit ownership is retained through normalization, loading/undo and recycle restore. Old broad delete actions from an Assigner are ignored; use the new per-entry controls. Ownership is based on the saved identity, not a typed display name. A remembered-browser link uses the same saved identity in another browser.
+
+REPEATED MARKETS
+Repeated entries of the same market share a deterministic coloured border, including copies in one zone. Each zone card shows تەکمیلە لە ریزی with the other zone numbers whenever that market appears in multiple zones, including three or more. Repetition within one zone has a supplementary count. Driver and Placed lists also display repetition references. The existing per-zone position indices remain. Duplicate display information is indexed once per render so large lists do not repeatedly rescan every placement for every card.
+
+CHECK STATUS / PICTURES FOR EVERY VIEWER
+Missing markets have a stronger light-red background; completed markets have a light-green background in Zones, Placed markets and every driver's list. This is presentation of shared saved checks, independent of the viewer's ability to edit checks. Check background takes priority over search/supplied fills; load state and exact-match text colours remain identifiable.
+Missing markets show up to three small product thumbnails directly on their cards; +N opens the full market details when there are more. Missing-item details show the full list and thumbnails. Tap a thumbnail to open the product's original picture. The Checker also sees pictures in the missing-item search results and selected items. Original names and supplied picture paths are retained; products without a supplied picture retain their no-picture placeholder.
+
+MARKET INFORMATION
+The Show Placement / شوێنی دانان button is removed from Market Information. Informational zone/position details remain viewable.
+
+PRODUCTS / MISSING ITEM RIGHTS
+The Products bottom-navigation page remains available by default for all roles. There is no Add to missing item action on the product list or the product-picture dialog, including for Checker. Missing-item selection happens only in a market's missing-item picker.
+Only the Checker role / جەردکەرەوە can select/save missing items, still subject to its permission setting. General, Driver, Assigner, Admin and Superadmin can view the information and pictures but cannot record missing items while in those roles. A broad permission override cannot bypass this role requirement; use the Checker role when performing this task. Existing authorized completed/uncheck operations are retained.
+
+PICTURE ZOOM
+The product-picture zoom range slider is removed. Use two fingers to pinch in/out and drag the zoomed image. Zoom is limited to 1x–5x and resets when opening another product. Double-tap/double-click resets the picture; mouse-wheel zoom is available on desktop. Photo profile editing is unchanged.
+
+INSTALL / DEPLOY / LIMITS
+Install ARAM-Warehouse-84.0.apk over the previous version, or extract it from ARAM-Warehouse-84.0-Download.zip first. Deploy updated public/ files and reload all browsers. Keep the existing configuration, images/ folder and signing key. No SQL migration is needed. All supplied product metadata and 6,186 original images remain bundled in the Android APK/source. Old clients must be upgraded to preserve new ownership fields and enforce the new UI/action rules. Existing public API authentication/authorization is unchanged; this update does not add authenticated server-side RLS against modified clients.
+
+VALIDATION
+22 automated suites: 20 browser and two native adapter/navigation suites. New full DOM/mock-server tests cover own-vs-other removal, ownership changes before replay, explicit/custom/legacy ownership, refresh and load/undo, consistent duplicate colours and cross-zone numbers, every role's red/green cards and photos, removed placement/product-add/zoom-slider controls, Checker-only missing selection, and two-pointer pinch in/out/reset/cancel. Existing sync, role lock/link, backup, PDF, product search, driver and native export/Back tests pass. No writes were made to the live database during testing. APK compilation/signature and embedded image/catalog completeness are verified; physical-phone touch/layout/lifecycle testing remains.

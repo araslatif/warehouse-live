@@ -1,0 +1,12 @@
+V81 — Lock a device to a role
+
+Superadmin (APK): App administration -> User card -> Change role.
+Choose the role, enable “Lock this device to this role”, then Save. The choice uses the durable sync queue and applies to that device after it receives the server update. To release it, uncheck the option and Save. Admin cannot change this setting.
+
+Locked public devices cannot change roles through the chooser or Settings. A locked driver role may still select another driver name when Driver selection is allowed; this does not change its role. Stale offline self-role actions are rejected against the latest locked profile during replay. Verified superadmin password recovery remains available in the APK.
+
+Kurdish allMissing label changed from هەمووی کەمە to هیچی دانەناوە.
+
+Install ARAM-Warehouse-81.0.apk over the existing APK. Deploy public/ and reload browsers to enforce this feature; older clients must be upgraded. No SQL change is required. Role lock is an app control within the existing public API architecture, not new authenticated server authorization against modified clients.
+
+Validated using 17 browser suites and two native suites with mocked server requests. No live database write testing. Physical-device testing remains.

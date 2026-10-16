@@ -1,0 +1,31 @@
+V82 — Product search, pictures and missing-item selection
+
+CATALOG
+Imported products.json from products.zip: 6,954 unique product codes, preserving the supplied Kurdish names, English names/details, brands, suppliers and categories. The uploaded SQLite products table matches these names and picture paths. Existing imported item codes remain available alongside the new catalog; for matching codes, the supplied product name/details take priority. Leading zeroes are preserved.
+
+The ZIP contains 6,186 original images. 6,157 product records have their referenced picture available; 797 reference a picture that is absent. Those products remain searchable with an explicit no-picture placeholder. No substitute pictures were invented. Original images are unchanged.
+
+GITHUB / WEB
+1. Deploy the updated index.html, products.json, product-config.js and the existing app configuration/vendor files at the same published root. These are all included in public/.
+2. Upload the images folder from your products.zip directly beside the published index.html, preserving its name, original filenames and letter case.
+3. If you publish the repository's root index.html instead, use the root copies of products.json and product-config.js, then upload images/ at that root. Do not extract the other application's index.html, executable, server or database over this warehouse app.
+4. When opening public/index.html directly inside a repository, the default image loader first tries public/images/ and then ../images/ at the repository root. product-config.js contains the relative base paths; no GitHub username, domain or hardcoded site URL is required.
+5. Refresh each browser once after deployment. The web ZIP intentionally omits a duplicate of your large images folder; use the original folder you supplied. Products are static versioned app assets, not thousands of rows added to the two-second warehouse state document.
+
+PRODUCT PAGE
+The new Products / بەرهەمەکان bottom-navigation page is enabled for every role, including General, Driver, Market Assigner and Checker. Superadmin can manage this page and its controls in the existing app-control panel.
+Search by exact or partial code, original Kurdish name, English name/details, brand, supplier or category. Exact codes rank first and are blue/bold; exact names are green/bold. Kurdish/Arabic variants and Arabic digits are normalized only for matching; displayed names stay unchanged. Multiple words can appear in any order. Name/code modes, category filtering, available-picture filtering and one-character typo/transposition fallback are included.
+The list starts with 48 results. Show more appends another 48. Thumbnails load lazily, not all at startup. Tap the thumbnail or product name for the original image, a zoom slider, full details and Copy code. Products without their supplied image show a placeholder.
+
+CHECKER / جەردکەرەوە
+Open a market -> Missing items. Search by product code or name; click + beside a result to add it. A small picture appears beside each selected original name. Tap it for the original picture and details. Enter expected and missing quantities, or use هیچی دانەناوە to mark the full expected quantity missing, then Save. The selected product name, picture path and quantities use the existing server synchronization. Product links/pictures also appear in the saved market missing-item details and links in the placed list. Read-only users may view product information but cannot save missing-item checks.
+
+ANDROID
+Install ARAM-Warehouse-82.0.apk over the existing version. It uses the same signing key and database configuration. The APK includes the full catalog and every supplied original image, so product search and pictures work without a website connection after installation; warehouse changes still need server connectivity to sync.
+ARAM-Warehouse-Android-Source.zip contains complete Android source, bundled web source, products.json and all 6,186 original images, plus the existing build instructions/dependencies/signing material. Keep the signing folder private. No external image service is needed. JPG/JPEG and WebP assets now have explicit native MIME types.
+
+CACHE / SYNC / BACKUP
+Catalog metadata is indexed in memory and cached separately in IndexedDB in browsers. Cached metadata remains searchable when offline. Browser pictures use normal on-demand HTTP caching; the APK bundles them all. The full static catalog is not attached to every warehouse save or downloaded on each two-second poll. Existing refresh, queue and device role-lock behavior remains. Selected missing items sync as before. JSON backups include the complete combined product metadata, with image paths rather than embedding all picture bytes; retain the original images folder or full Android source as the image backup.
+
+VALIDATION
+20 suites: 18 browser and two Android adapter/navigation suites. New full-catalog tests use mocked requests and verify exact/partial/Kurdish/multiword/fuzzy search, category/image filters, leading zeros, bounded rendering, picture/zoom/placeholder paths, checker selection/quantities/server-save data, catalog isolation from frequent sync, stable refresh and offline IndexedDB metadata. Search timing measured about 7–9 ms on this test machine for 6,954 product entries; device/network performance varies. No live database writes were made during tests. APK build/signature and embedded catalog/image completeness are verified. Physical-phone layout/touch testing remains.

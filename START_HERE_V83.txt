@@ -1,0 +1,32 @@
+V83 — Locked identity, remembered browser links and read-only driver browsing
+
+LOCKED DEVICE
+When superadmin locks a device role, the top role/driver identity button is hidden for every locked ordinary role, including Driver. The public role chooser and advanced role fields are unavailable. A self-service role or driver-identity selection is rejected while locked, including stale queued requests replayed against the latest locked server profile. Superadmin assignment/unlock and the APK's password-protected superadmin recovery remain available.
+
+BROWSE DRIVERS
+Every role now has a Driver list page. Its compact driver selector lists all drivers. Choosing a driver here only chooses the list being viewed; it does not change the user's saved role, saved name, driver identity or lock. Polling preserves the browsed list.
+General, Market Assigner and Checker are always read-only on driver lists, even if older app-control settings granted editing/loading permissions. Their list cards have no add/load/undo/remove/reorder/transfer/unset actions. Card details are also read-only. Search, zone/position information, supplied status and product information remain viewable. These roles retain their authorized tasks on other pages: for example, a Market Assigner can assign in Zones and a Checker can record missing items from Placed markets.
+Driver users can add to their own saved driver list as before. Browsing a different driver is read-only and does not reassign their identity. Admin/Superadmin driver-management behavior is retained.
+
+REMEMBER THE SAME PROFILE IN ANOTHER BROWSER
+Browsers intentionally do not share local storage or expose a reliable common physical-device ID. A normal shared site link cannot automatically prove that Chrome, Firefox, private browsing or another device belongs to the same physical hardware. This update uses an explicit private remembered-device link instead of guessing from IP address, screen size or device model.
+
+Superadmin, in the APK:
+1. Open App administration -> target user/device -> Change role.
+2. Choose the role/driver identity, check Lock this device to this role, then Save.
+3. Reopen Change role and expand Remember in another browser.
+4. Enter the published WEB APP address normally used to open the app, for example your GitHub Pages app URL. Use the published app address, not the GitHub repository page or the APK's internal appassets address. This address is remembered for future links.
+5. Click Create device link. The app generates a random token, stores only its SHA-256 hash in the target server profile, and shows the private link after server confirmation.
+6. Copy that link and open it in each browser that should use this same profile. On first use it needs a server connection to verify the token and restore the latest role/lock before enrolling or showing a role chooser. Any existing individual password assigned to that profile still applies.
+
+After linking, local storage plus a persistent same-origin cookie remember the shared profile ID; the role/lock lives in the server profile. The same browser may subsequently use the normal app address. A different browser or cleared browser storage must use the private remembered link again. If local storage is lost but the cookie remains, the ID is restored and the app waits for its server profile before showing identity choices.
+
+Treat this link as private: anyone who receives it can enroll a browser under that same profile. Creating a new link replaces the previous link for future enrollment; it does not sign out browsers already linked to that ID. This is explicit profile linking, not proof of physical hardware or new server-enforced account authentication. Existing public database/API authorization is unchanged. All clients must be upgraded to enforce the current app's role/read-only controls.
+
+If a browser has unsynced edits from a different identity, linking is blocked rather than discarding them. Open its normal app address, finish syncing, then reopen the remembered link. Invalid or replaced links show a retry/error screen without enrolling a fresh identity.
+
+INSTALL / DEPLOY
+Install ARAM-Warehouse-83.0.apk over the existing APK. Deploy the updated public/ files and reload browsers. Keep the same database configuration, images/ folder and signing key. No SQL migration is required. All 6,954 static products and the 6,186 supplied original images remain bundled in the Android APK/source. Web image paths are unchanged from V82.
+
+VALIDATION
+21 suites: 19 browser and two native adapter/navigation suites, all using mocked server requests. Added full DOM tests for hidden locked-driver identity controls, passive all-driver navigation through polling, superadmin-confirmed link creation, hash-only token storage, a fresh browser restoring the same locked profile, local cache/cookie-only ID recovery, rejected invalid links, and enforced General/Assigner/Checker read-only driver cards/details despite permission grants. Existing products, missing-item, PDF, backup, placement, sync, role-control and Android adapter/navigation suites pass. APK build/signature and catalog/image completeness are verified. No live database write testing. Physical-device touch/layout/lifecycle testing remains.
