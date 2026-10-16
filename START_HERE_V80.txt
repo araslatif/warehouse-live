@@ -1,0 +1,18 @@
+V80 — Driver lists, supplemental placements and profiles
+
+INSTALL / DEPLOY
+Install ARAM-Warehouse-80.0.apk over the existing APK. Deploy public/ and reload every browser. Upgrade all clients before using supplemental placements: older releases deduplicate zone records and can remove supplementary copies when they save. No SQL migration is required. Keep the existing database configuration and Android signing key.
+
+CHANGES
+• Driver cards show zone numbers and red original zone indices, including multiple positions for the same market.
+• Ordinary zone search/name clicks never place an already present market again in that zone. Use the small تەکمیلە button in the search result or zone card, then confirm the already-placed warning. Each supplemental placement has a stable ID, separate slot and index. Removing one zone card removes that instance only. Loading applies to the market and captures all its placements; Undo restores all copies. Recycle and backup preserve copies.
+• Drivers may add existing placed or unplaced markets to their own driver list, and create a market with a name and code. They cannot use this permission to edit another driver list. Own-list adding has a separate control-panel feature and requires Create market permission; it does not grant Manage drivers.
+• General, driver and assigner users can save a name once. A manually saved existing name is also locked. An automatically suggested driver name can still be replaced once. Only superadmin can change saved names in user management; temporary profile UI grants do not bypass the saved-name lock.
+• Profile pictures open a crop editor before saving. Drag to pan; two fingers zoom and rotate; sliders, flip and reset are also available. Save commits the square image; Cancel/Back leaves the saved photo unchanged.
+• Admin can inspect user information/activity but cannot edit names, roles, passwords, access, activity or delete users. User mutation controls and handlers require superadmin.
+
+SYNC / LIMITS
+Existing two-second polling/realtime sync remains unchanged. Supplement actions use durable IDs so retry does not duplicate placements. Policies and backups retain existing behavior. App permissions remain client-side controls using the existing public database API; this update does not add authenticated server-side authorization against modified clients.
+
+VALIDATION
+16 browser suites and two native adapter/navigation suites use mock requests only. Additional coverage checks own-driver add/create, cross-driver denial, locked names, supplemental placement retry/reload/load/undo/recycle/backup, read-only admin cards, and simulated photo transforms/save/cancel/Back. Android compilation and signing are verified. Physical-phone touch, layout and lifecycle testing remains necessary.
