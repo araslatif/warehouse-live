@@ -1,0 +1,31 @@
+V78 - Simple public roles and per-device driver identity
+
+Update: deploy public/ to the existing website and reload each open browser once. Install ARAM-Warehouse-78.0.apk over the existing Android app. No SQL or database-schema changes are required. Keep the same Supabase configuration and Android signing key.
+
+Browser use:
+1. First use opens a simple card with only three choices: گشتی (General), شۆفێر (Driver), وەسڵ دانەر (Market Assigner). These roles need no role password.
+2. Driver opens a large-name list. Select a name once to see that driver's markets. The device ID, role and chosen driver are saved through the existing durable server action queue. Reloading, restarting or receiving server data keeps the chosen role and driver. A previously loaded choice also works from the offline cache.
+3. The small account/name button at the top lets the person change among these three roles or select another driver. Driver lists are read-only by default, with a simple market search and original list indices. The driver sidebar only shows the chosen driver's list.
+4. Market Assigner can place markets in zones immediately, without a role password. General can search placed markets.
+
+Browser Settings are hidden and their opening paths are blocked by default. The public chooser never offers admin, checker, superadmin or custom roles. Individual passwords deliberately assigned by an administrator still apply; password-free roles do not bypass an explicit per-device password lock.
+
+APK administration:
+- Settings remain available in the native APK. Protected roles retain their existing unlock flow and now retain an authorized role choice on the device profile.
+- Superadmin console -> open a user/device card -> Change role. Select any configured role; for Driver also choose a driver name. Save. The target device applies the new choice when its normal background receive/poll runs, without needing manual refresh.
+- A separate, explicit Allow browser Settings checkbox grants Settings access to a browser device when needed. It is off by default, even when assigning an advanced role. Choosing a public role later removes that exceptional browser Settings grant.
+- A role change affects only its target device. Remote profile role choices take priority over stale presence labels and cached selections.
+- Native Back exits from a driver's home list; from an open card, drawer or another role's driver subpage it navigates back normally.
+
+Search feedback:
+- Exact code stays bold blue; exact full name stays bold green.
+- Exact placed results get a stronger pale-green background; exact unplaced results get a stronger pale-red background. Loaded violet cards retain their supplied status styling.
+- A short shine/glow appears when the exact query or matching results change. Routine two-second polling does not continuously replay the animation. Reduced-motion preference is respected.
+
+Data/technical notes:
+- New profile fields: roleChoice { role, driverId, version, selectedAt, source, assignedBy, settingsAllowed }, lastSelectedDriverId, optional nameFromDriver. They are preserved by the existing profile normalizer, backups and targeted sync patches.
+- New choices use the same durable pending-action queue and confirmed-save indicator as other mutations. Offline changes remain pending and sync after reconnection. No pending writes are discarded.
+- Existing device IDs are retained. Newly created devices use UUIDs when available.
+- These remain the existing application's client-side role/UI controls backed by shared state, not a newly introduced authenticated server authorization system. Public API policies and save RPCs are unchanged. Native-bridge detection controls APK Settings visibility; it is not an unforgeable security identity.
+
+Validation: 14 browser regression suites, including a multi-window mocked-server role/onboarding/reload/offline/remote-admin scenario; native export adapter tests; the actual native Back script; script syntax; Android compilation; APK signatures. Tests make no writes to the real database. Physical-phone layout, file-provider and lifecycle behavior still need checking.

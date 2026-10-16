@@ -1,0 +1,30 @@
+V79 - Superadmin app controls and simpler public screens
+
+INSTALL / DEPLOY
+Install ARAM-Warehouse-79.0.apk over the existing APK. Deploy public/ and reload each browser once. No SQL changes are required. Keep the same public database configuration and Android signing key.
+
+PUBLIC DEFAULTS
+General: placed-market page and search. Driver: selected driver's searchable list; can choose another driver. Market Assigner: zones page only, including normal market placement and new-market creation when a code is missing. The bottom navigation disappears when only one page is enabled.
+All three: top three-role chooser, own name/photo Settings, refresh. No advanced role selector in Settings, on either browser or APK. Name changes do not ask for the old device-name code. Existing names and pictures remain visible when editing is locked. Individual passwords assigned to a device still apply.
+Header/logo stays closed; header toggle and sidebar toggle are off. Loading, undo, deleting, bulk unset, history, recycle, driver-list editing, market icons and assigned-by details are off by default. Names, codes, addresses, positions and status stay visible. These defaults can be changed by the superadmin.
+The old first-loading-driver message and separate toolbar are removed. An active loading driver's name is tiny plain text in the top bar. A small checkmark can finish loading when loading is allowed.
+
+SUPERADMIN ACCESS
+In the native APK: Settings -> App administration -> existing superadmin password. This recovery entry replaces the advanced role dropdown for public roles. Once unlocked, open the superadmin console. Its role/device controls are unavailable to ordinary public users. Superadmin keeps recovery access and is not locked out by policies.
+
+CONTROL PANEL
+1. Choose Role to change defaults for that role, or Device to target one device/user. Device overrides take priority over role settings.
+2. Use On / Off / Inherit. Inherit removes that target override so the role/default below it applies.
+3. The inventory includes pages, navigation, actions, card fields, static buttons/input fields/other identified elements, reports and Settings elements. Dynamic market/driver controls are grouped by function. Search by label or element ID. Some administration and authentication controls retain their existing role requirements; public roles never expose the advanced role selector merely by unlocking its field.
+4. Click Apply to server. Checkbox/select changes remain staged until Apply and survive normal background refresh. Only edited keys are merged into the latest state. Successful confirmation means the server acknowledged the queued operation. Offline Apply is retained in the durable queue and reports pending, then updates its confirmation after reconnection.
+5. An action also needs its action permission. Turning on common features stages the corresponding permission automatically. Extra action permissions remain independently adjustable.
+6. Choose a temporary duration (5/15/60 minutes) to override the permanent layer. It automatically expires back to the permanent/role settings. Revoke temporary removes that layer immediately and keeps other unsaved edits. A target has one temporary layer; another temporary Apply renews that layer's expiry.
+7. Profile setup 5 min stages editing of name/photo for five minutes, with a permanent lock underneath. Click Apply; it locks automatically after expiry. Lock profile stages an immediate permanent lock, then click Apply.
+8. The previous per-device Change role button remains available in user cards. Assign any configured role and a driver identity where appropriate. Public users switch among the three public roles only when their switch is allowed.
+
+PERSISTENCE / LIMITS
+Policies are stored in shared state.uiPolicies.roles / .devices and use the same durable queue, server confirmation and two-second receive path as market changes. Compatibility copies in the existing role configurations/device profiles preserve policies when older clients save a state without the new root field. Older clients still need upgrading to enforce the controls. Policies survive restart, are included in backups, and safe merge restore restores missing policy targets without replacing existing targets. Browser clocks govern temporary UI expiry. Already queued, valid operations remain durable; new typed actions and UI events are checked against current client permissions.
+These are client-side app visibility/action controls. The existing public API/database access rules are unchanged; this is not new authenticated server-side authorization against a modified client. Native-bridge detection is not an unforgeable security identity. Strong server-enforced authorization would require a separate authenticated backend change.
+
+VALIDATION
+15 browser regression suites, including shared mock-server staged Apply, role/device precedence, temporary expiry and presets, revoke/discard, name/photo locks, generic input/button locks, independent driver loading, protected role fields and offline confirmation. Native export and Back-script tests, script syntax, Android compilation and APK signature checks. No writes were made to the real database. Physical-phone layout and lifecycle behavior still need checking.
