@@ -1,1 +1,1 @@
-{"build": "V85", "apk": "85.0", "features": ["driver-transfer", "loader-role", "grouped-placements", "monthly-statistics", "cached-market-search"]}
+{"build": "V86", "apk": "86.0", "features": ["driver-load-permissions", "durable-role-locks", "list-selection-exports", "advanced-search", "per-user-ui", "full-size-profile-photos"]}
