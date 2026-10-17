@@ -13,9 +13,5 @@ act({type:'zone_slot_assign',zone_id:'z',market:a,new_slot_id:'insert-a',before_
 act({type:'zone_auto_reindex',zone_id:'z',enabled:false});act({type:'delete_market',market:a});assert.equal(ctx.state.zoneSlots.z[1].marketKey,null);
 act({type:'user_password_set',device_id:'user1',password_hash:'new-hash',id:'password-v1'});assert.equal(ctx.deviceProfile().accessPasswordHash,'new-hash');assert(!ctx.deviceProfile('user2').accessPasswordHash);assert.equal(ctx.deviceProfile().lastRole,'assigner');assert(ctx.enforcePersonalPassword());assert(!layer.hidden);
 store.set(ctx.personalPasswordTokenKey(),'password-v1');assert(!ctx.enforcePersonalPassword());act({type:'user_password_set',device_id:'user1',password_hash:'another',id:'password-v2'});assert(ctx.enforcePersonalPassword(),'a later server password invalidates old local unlock');
-<<<<<<< Updated upstream
-assert(html.includes("'zone_reindex','zone_auto_reindex','user_password_set','driver_move','zone_auto_reindex_all','driver_add_own','device_link_set','zone_entry_remove'].includes"),'all new actions must survive restart');
-=======
-assert(html.includes("'zone_reindex','zone_auto_reindex','user_password_set','driver_move','zone_auto_reindex_all','driver_add_own','device_link_set'].includes"),'all new actions must survive restart');
->>>>>>> Stashed changes
+ctx.PENDING_WAREHOUSE_KEY='test-pending';ctx.pendingWarehouseActions=[];ctx.localStorage.setItem('test-pending',JSON.stringify(['zone_reindex','zone_auto_reindex','user_password_set','driver_move','driver_add_own','device_link_set','zone_entry_remove','device_role_select','driver_dispatch','ui_policy_reset86'].map(type=>({type,id:'pending-'+type}))));vm.runInContext(lines.find(l=>l.startsWith('function readPendingWarehouseActions(')),ctx);ctx.readPendingWarehouseActions();assert.equal(ctx.pendingWarehouseActions.length,10,'every scoped action must survive restart');
 console.log('PASS per-zone reindex, automatic compaction after delete, middle insertion, idempotent replay, mode persistence and isolated per-user password/reset enforcement');

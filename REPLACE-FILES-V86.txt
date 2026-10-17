@@ -1,0 +1,34 @@
+COMPLETE V86 WEB PROJECT — GITHUB REPLACEMENT
+
+1. In the working app, finish synchronization and export a full backup.
+2. In GitHub Desktop choose Repository > Show in Explorer.
+3. Keep your existing images/ folder and Git repository metadata.
+   Keep a separate backup of your current supabase-config.js and public/supabase-config.js.
+4. Extract this ZIP. Copy its CONTENTS directly into that repository folder,
+   replacing the old project files. index.html must be at the repository root.
+   This ZIP contains no images/ folder and will not overwrite your original images.
+5. The included database configuration is from the latest saved project.
+   If your live configuration was changed separately, restore your current live
+   supabase-config.js into BOTH root and public/ before committing.
+6. Commit with summary: Update complete warehouse project to V86
+   Then Push origin. Wait for your hosting deployment to succeed.
+
+CLOUDFLARE WORKERS
+The included wrangler.jsonc builds and publishes static assets from dist/.
+Build command: npm run build
+Deploy command: npx wrangler deploy
+Build script copies public/ and your root images/ folder into dist/.
+Keep the existing Cloudflare account/project and server database.
+GitHub push alone only updates the live site if automatic deployment is connected.
+For a dashboard asset upload, run npm run build and upload the CONTENTS of dist/.
+
+CHECK
+Open your live website /version.json: it must show V86.
+Open /products.json: it must return the product catalog, not a missing page.
+Reload your open devices after deployment.
+
+DATA SAFETY
+No database operation occurs while copying these files or building the website.
+Do not run included historical SQL setup/import/reset files for this update.
+Do not clear browser storage, restore old backups, or create a new database.
+Android signing keys and APK source are not included in this web package.

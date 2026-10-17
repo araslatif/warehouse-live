@@ -1,0 +1,90 @@
+ARAM Warehouse V86 — upgrade and controls guide
+
+SAFE UPGRADE
+- Export a fresh full backup in the current app and wait for pending sync to finish.
+- Copy the GitHub upgrade ZIP CONTENTS into the existing repository, replacing files.
+  Do not delete the existing repository folder, images/ or supabase-config.js.
+  The upgrade ZIP deliberately omits database configuration and SQL setup/reset files.
+  Root and public/ contain identical V86 app files for either publishing folder.
+- Commit/Push, wait for Cloudflare deployment and reload every open browser.
+  Open /version.json at your website root: it must say V86.
+- Install APK 86.0 OVER the existing app. Do not uninstall or clear browser/app storage.
+  Application ID and signing certificate are unchanged.
+- No live database reset, import, restore, schema migration or data rewrite is needed.
+  The new authority/policy fields are additive. Existing assignments, checks, drivers,
+  photos, product images, history and queued actions are retained.
+- Update all devices. Older app releases do not implement the new lock/permission rules.
+
+DRIVERS AND PERMISSIONS
+- Driver users can use بارکرا and Undo on their own driver list by default. Other
+  driver lists remain read-only unless superadmin explicitly grants broader actions.
+- Superadmin grants now control actual actions instead of being silently ignored by
+  hard role checks. Feature On links to its action permission. Either can grant the
+  action; an explicit Off still takes precedence. Device overrides beat role defaults.
+- Open a user card > UI/permissions to inspect conflicts, hidden elements and effective
+  capabilities. Reset UI overrides removes only that user's UI/permission customizations,
+  not placements, history or the separately saved role lock.
+- Saved-name editing remains locked by default. Superadmin can explicitly grant name
+  editing (including the existing temporary setup preset), then revoke it again.
+
+ROLE LOCKS
+- Open a user card > Change role, choose role/driver, tick Lock and Save; or use the
+  quick Lock/Unlock button. The saved authority is mirrored in the device profile.
+- Role locks block public/no-password role choices, temporary role changes and stale
+  queued self-role/profile edits. Unlock explicitly reopens role switching for that
+  device. Turning role switching Off in the policy panel also blocks self-role actions.
+- Superadmin can manage users in an authorized web session as well as the APK.
+  Admin remains read-only for user administration.
+- Identity is the existing saved device/browser ID. For another browser, use the
+  existing private remembered-device link. A common public URL alone cannot identify
+  the same physical phone after browser identity/storage is removed.
+
+SELECTION AND CSV/PDF
+- Placed, Driver, Zone and Product lists have a unified selection/export toolbar.
+- Select all selects ALL matching rows, not just the first rendered page. Clear affects
+  only the selection. Viewers can export without receiving transfer/delete permissions.
+- Export dialog sources: assigned markets, all markets, any accessible driver, zone,
+  products, each assigner's retained assignments, or user activity. User-history exports
+  are restricted to the user or supervisors who have report permission.
+- Choose All, Search results or Selected only. Configure date range, status, sort,
+  repeated-market merge, columns and their order, title, paper size/orientation, font
+  size and table style. Preview shows count and the first five rows. Save/load settings
+  presets separately for each list type on the current browser/device.
+- CSV is UTF-8 with standard Code/Name/etc. headers. Quoting and formula escaping are
+  included. Keep code/name columns if importing a directory CSV later. Reports are not
+  a substitute for a full backup. PDF uses the bundled Arabic/Kurdish font and repeats
+  column headers and page numbering; share/export uses the existing Android bridge.
+- Export column permissions and card-field visibility are checked when generating files,
+  including when a permission is revoked while the dialog is open.
+
+SEARCH
+- All words (any order), Any word, Phrase, Exact or Starts with.
+- Market field options: All fields, Name, Code or Address; exclude words and filter
+  Placed, Unplaced, Loaded, Not loaded, Missing or Complete.
+- Product options also include supplier/brand, typo matching on/off, name/code sort,
+  and the existing category/image filters. The missing-item picker has these options.
+- Options are collapsed by default and remembered per list locally. Reset options
+  returns to defaults. Spaces between words search for both terms with All words.
+
+USER ADMINISTRATION / APPEARANCE
+- Search users by words/name/ID/device, filter role (including custom roles) and online
+  state. Expanded cards contain role/lock, password, name, UI permissions, report,
+  activity and identity actions in addition to existing protected registry actions.
+- Click a user's photo to view it in full size. Pinch/drag/wheel zoom; reset returns
+  the picture to its original view.
+- For each role or device, stage density, text size, card rounding, accent and home
+  page alongside individual pages/buttons/fields/actions. Apply saves to the server.
+  Temporary appearance follows the selected duration. Driver/read-only/full-access
+  presets can be staged; diagnostics expose explicit-Off conflicts and hidden elements.
+
+VALIDATION
+- Full-DOM regression and mock-server tests cover driver load/undo, remote permission
+  Apply, role-lock reload/stale edits, profile edit grants/revocation, scoped selection,
+  CSV round trip, real multi-page PDF generation, user photo zoom, appearance, backups,
+  sync and previous features. No tests write to the real database.
+- PDF output was rendered and visually checked, including the first and last pages.
+- No physical phone UI test was available.
+
+The complete Android source includes the existing private signing material so future
+updates remain installable. Keep it private; upload only the web upgrade contents to
+GitHub. The APK still bundles all 6186 original product images.

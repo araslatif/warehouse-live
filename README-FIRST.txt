@@ -1,3 +1,7 @@
+Current release V86. Read START_HERE_V86.txt. No SQL reset is required.
+
+Current release: V85. Read START_HERE_V85.txt before updating.
+
 WAREHOUSE PLACEMENT - SUPABASE LIVE EDITION
 ===========================================
 
