@@ -1,0 +1,56 @@
+ARAM Warehouse V85 — safe upgrade instructions
+
+This release changes app files. It does not include live data, does not clear the database,
+and needs NO SQL setup, reset, restore or migration.
+
+BEFORE UPDATING
+1. Use the current app's Backup / Export to download a fresh full backup.
+2. Let pending changes finish syncing (green refresh button).
+3. Keep the existing GitHub folder and copy the upgrade ZIP contents INTO it.
+   Choose Replace files. Do not delete the repository folder first.
+4. Keep your current supabase-config.js and images/ folders. The web upgrade ZIP
+   deliberately omits database configuration. It contains both root and public/
+   copies so either existing publishing folder receives the same V85 app.
+5. Commit and Push. Wait for Cloudflare deployment to succeed. Refresh every open
+   browser. Verify version.json at the website root says V85.
+6. Install APK 85.0 over the existing ARAM Warehouse app. Do not uninstall or clear
+   app/browser storage. The package ID and signing key are unchanged.
+7. Update all active devices; older clients do not know the new controls and may
+   still use their old history retention limits.
+
+FEATURES
+- Driver-list transfer checkbox. When checked, each eligible market has a
+  گواستنەوە button. Choose another driver and confirm the Kurdish message naming
+  that driver. The source membership is removed, the target membership is added,
+  and loaded driver attribution follows the transfer. Zones and item checks stay.
+- Only-this-driver search checkbox. Checked: search filters this driver's list;
+  adding from search/Enter is disabled. Unchecked: normal whole-directory search.
+- Password-free باربەرێکەر role in the public chooser, remembered per device.
+  Pick a loading driver in the Placed page and change it immediately for the next
+  load. On a driver page, loading explicitly uses that displayed driver.
+- Admin/superadmin always have the top role button. General/Loader are temporary
+  views for them; گەڕانەوە بۆ ئەرکی خۆم returns without a password. Saved privileged
+  roles are retained. Server role changes/revocation override temporary views.
+- Repeated placements are consecutive within one market frame, retaining each
+  zone/index. Supplements reference the first placement's zone. Display groups
+  sort by the oldest known assignment day, then zone index; this is display-only.
+  Tiny red age uses Baghdad calendar days. Undated legacy entries say unknown.
+- Bulk selection in Placed: select visible, clear, move selected markets to a
+  chosen driver, and CSV export. Moving removes prior driver memberships and
+  updates loaded attribution; it never unsets zone placements. Driver badges
+  have stable distinct colours and driver names appear in violet bold text.
+- Monthly per-user statistics, detailed market/time/zone assignment rows, current
+  driver/zone summaries and existing full-data report sections export to PDF and
+  Excel. Date filters use Baghdad time. No new silent history trimming. History
+  already removed by earlier releases cannot be reconstructed by this update.
+- Placed search caches normalized market text and placement metadata. It renders
+  100 market groups at first with Show more, while searching the entire directory.
+
+TESTING
+Regression tests and new multi-client mock-server tests cover transfer, queued
+restart, role lock/return, unplaced loading confirmation, data preservation,
+reports, backup/restore and 6000-market indexed search. No test writes were made
+against the real database. No physical Android device test was available.
+
+The full Android source contains the existing signing material to permit updates.
+Keep it private. Upload only the web upgrade ZIP contents to the public repository.
