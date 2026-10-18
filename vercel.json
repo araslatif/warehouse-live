@@ -1,5 +1,5 @@
 {
-  "outputDirectory": "public",
+  "outputDirectory": "dist",
   "cleanUrls": true,
   "headers": [
     {
@@ -20,5 +20,6 @@
         }
       ]
     }
-  ]
+  ],
+  "buildCommand": "npm run build"
 }
