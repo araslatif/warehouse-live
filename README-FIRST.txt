@@ -1,3 +1,15 @@
+CURRENT RELEASE: V95 / APK 95.0
+Read START_HERE_V95.txt for repeated pallets and safe upgrade.
+
+CURRENT RELEASE: V94 / APK 94.0
+Read START_HERE_V94.txt for the redesigned console and safe upgrade.
+
+CURRENT RELEASE: V93 / APK 93.0
+Read START_HERE_V93.txt for inline assigner names and safe upgrade.
+
+CURRENT RELEASE: V92 / APK 92.0
+Read START_HERE_V92.txt for compact multi-driver columns and safe upgrade.
+
 Current release V86. Read START_HERE_V86.txt. No SQL reset is required.
 
 Current release: V85. Read START_HERE_V85.txt before updating.
