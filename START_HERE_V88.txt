@@ -1,0 +1,11 @@
+V88: Remove selected from the current driver list only.
+Enable list selection, select some/all entries, then click لابردنی هەڵبژێردراوەکان.
+Confirm the Kurdish message naming the driver and count. Cancel leaves everything.
+The action removes membership only, preserving directory, zones, zone indexes,
+loaded/supplied state, other drivers and assignment history. It records driver removal activity.
+Requires the existing driver edit permission; superadmin can hide this control.
+Search selection and add-selected/add-all from V87 remain included.
+Copy package contents into repository root, preserving images and live database config.
+Cloudflare build: npm run build. Deploy: npx wrangler deploy. Root: /.
+Install APK88 over the existing APK; never uninstall/clear data for this update.
+No database reset or SQL migration. No live data was modified during testing.

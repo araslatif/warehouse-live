@@ -1,0 +1,18 @@
+ARAM Warehouse V95 — one-by-one pallets with Sorani repeat confirmation
+
+MARKET ASSIGNER
+Search/enter a market and tap it or Add as usual. The first placement is added normally. If the market already has placements, the app asks in Sorani Kurdish before adding ONE supplementary pallet. The separate تەکمیلە button is removed from assigner results and zone cards.
+
+The confirmation lists the current pallet count, each zone and original index, assignment date/time in Baghdad time, and the assigner when recorded. It names the destination zone and new total. Both confirmation buttons and title are Sorani, even when the app interface is in another language. Cancel changes nothing. Repeated taps while a confirmation is open do not add extra records. A changed placement list during confirmation triggers a new prompt with the updated count. Permission changes are checked again before queueing.
+
+Existing insert-before/empty-position selections remain supported. Each accepted placement keeps its own unique record, index, time and assigner. CSV-page assignment for the assigner uses the same confirmation. Existing loaded-market rules and superadmin supplement permissions remain effective. Other roles retain their existing supplementary-placement flow.
+
+PLACED LIST
+All current placements for the same market stay together in one frame, with a Sorani total such as «٣ بالێت» and every zone/index in the header. Individual cards keep their original index, date, assigner, loading/check status and actions. Driver/zone duplicate information also shows the total and locations. Existing data is not rewritten or migrated.
+
+SAFE UPGRADE
+Install APK 95.0 over the existing app. Do not uninstall or clear storage.
+Extract the web ZIP contents into the GitHub repository root. Preserve images and database configuration. Commit and push; build with npm run build and deploy with npx wrangler deploy. No SQL imports, migrations or resets are required. Keep the full Android source private because it contains signing material.
+
+VALIDATION
+Mock-server tests cover initial and repeated assignments through ordinary result taps, Sorani count/time/location/labels, one-by-one unique records and sync, grouped frames/counts, cancel/double-tap safety, concurrent additions and permission changes. Regression checks cover replay/load/undo/recycle/backup of duplicate records, CSV management and prior console design. Chromium screenshots were inspected for the grouped list and repeat prompt. APK signature, web/native parity and original images are checked. A physical Android device was not available. No live warehouse data was changed during development.

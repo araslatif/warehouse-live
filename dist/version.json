@@ -1,0 +1,33 @@
+{
+  "build": "V95",
+  "apk": "95.0",
+  "features": [
+    "driver-load-permissions",
+    "durable-role-locks",
+    "list-selection-exports",
+    "advanced-search",
+    "per-user-ui",
+    "full-size-profile-photos",
+    "driver-search-bulk-add",
+    "driver-selected-remove",
+    "scoped-safe-backups",
+    "historical-list-snapshots",
+    "large-font-pdf-design",
+    "dispatcher-quick-drivers",
+    "confirmed-load-transfer",
+    "automatic-driver-resolution",
+    "csv-market-list-page",
+    "invoice-column-mapping",
+    "live-csv-market-actions",
+    "compact-multi-driver-columns",
+    "inline-placement-assigner-name",
+    "compact-sidebar-admin-console",
+    "refined-market-cards",
+    "assigner-repeat-tap-confirmation",
+    "pallet-count-group-frame"
+  ],
+  "package": "V95-FULL-GITHUB-NO-IMAGES",
+  "webHtmlSha256": "2a830fe346054119a511c6c39e2633ec6fde61ccd0ece77c0401a094524fc1d5",
+  "productImageCount": 6186,
+  "imagesIncluded": false
+}

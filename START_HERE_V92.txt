@@ -1,0 +1,23 @@
+ARAM Warehouse V92 — compact side-by-side driver lists
+
+Web and APK contain the same driver-page update.
+
+HOW TO USE
+1. Open the driver page.
+2. Check «لیستی چەند شۆفێر» to see two driver columns side by side.
+3. Each column has its own driver selector, search, checkbox selection and scrolling.
+4. «＋ شۆفێر» adds more columns (maximum six). Swipe horizontally to see extra columns.
+5. Uncheck the option to return to the original single-driver page.
+
+Compact cards retain market name/code, address, original driver-list index, zone positions, missing/completed/loading information and duplicate-market indicators. Loading in a column attributes the load to that column's driver. Arrow buttons reorder the original driver list. Transfer opens the existing confirmation dialog. Select all, removal and CSV/PDF export apply to that column. Search defaults to the driver's own list; uncheck «تەنها ئەم شۆفێرە» to find and add other markets. Preferences are remembered on this browser/device only.
+
+The usual permissions still apply: a general viewer sees lists without mutation controls; drivers work with their own list unless granted additional permission. The superadmin can enable/disable the feature under Driver controls. Changing a column only changes which list is displayed; it never changes the device's role or identity.
+
+SAFE UPGRADE
+Install APK 92.0 over the current APK; do not uninstall or clear app storage.
+For GitHub, extract the web ZIP contents into the repository root (package.json, build.mjs, index.html and wrangler.jsonc must be at the root). Preserve your existing images folder and database configuration. Commit and push; deploy with npm run build and npx wrangler deploy. No database migration or SQL import is needed for this update. Never upload the private Android source/signing material to a public repository.
+
+This release makes no live server-data changes during development. Driver removals affect only that driver's membership, not zone placements, loading records or the market directory. Existing CSV import/backup/report features remain available. See START_HERE_V91.txt for the CSV page and START_HERE_V89.txt for backup/report options.
+
+VALIDATION
+Mock-server tests verify independent driver columns/search/index, correct loading attribution and undo, reorder, selection/export/removal, addition, transfer cancel/confirm, refresh, local preferences and role restrictions. Existing CSV and dispatcher tests pass. Mobile Chromium layout checked at 393px; native APK signature and assets verified. A physical Android device was not available for testing.

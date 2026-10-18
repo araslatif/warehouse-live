@@ -1,0 +1,15 @@
+ARAM Warehouse V93 — assignment name beside the date
+
+The placed-market page now shows the assigner's name inline with the existing small red date text, for example:
+ئەمڕۆ دانراوە لە لایەن باوەر
+
+Each repeated placement uses its own assigner. The name comes from the assignedBy device's saved profile, falling back to the recorded assignment user_name when the profile is unavailable. Unknown authors are omitted. Older entries retain their day count plus the name. The separate author line is removed to avoid duplicates. Assigned-by names are visible by default for public roles; explicit superadmin field:assigner overrides still apply. This is a display update; no database migration or data rewrite is required.
+
+SAFE UPGRADE
+Install APK 93.0 over the existing APK. Do not uninstall or clear app storage.
+Extract the web ZIP contents into the GitHub repository root. Keep your existing images folder and database configuration. Commit and push; deploy with npm run build and npx wrangler deploy. No SQL imports or reset are needed. Keep Android signing/source material private.
+
+Both web and native assets have the same changes. All V92 multi-driver views and earlier CSV/backup/report features remain. See START_HERE_V92.txt for side-by-side driver columns.
+
+VALIDATION
+Mock-server tests check today's and older entries, different assigners on repeated placements, saved-log name fallback, escaping, missing names, loader/general visibility, explicit permission denial and remote name updates without changing warehouse records. Existing placed-search and multi-driver tests are also run. Native signature, HTML parity and preservation of existing images are verified. A physical Android device was not available for testing.

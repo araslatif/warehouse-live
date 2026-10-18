@@ -1,0 +1,19 @@
+V87 — Driver search bulk add (web update)
+
+- Check هەڵبژاردنی چەند مارکێت to select search results without adding/resetting.
+- Click زیادکردنی هەڵبژێردراوەکان to add selected matches together.
+- Click زیادکردنی هەموو ئەنجامەکان to add all matches, even beyond the first 30.
+- Already assigned markets are skipped; selection resets on search/driver changes.
+- Bulk additions retain the query; uncheck selection for original tap/add/clear behavior.
+- More results can be displayed in groups of 30.
+- Existing permission checks and durable pending-action sync are used.
+- Superadmin control panel includes feature:driver_search_bulk and individual controls.
+
+DEPLOY
+Copy ZIP contents directly into your real GitHub repository root, replacing files.
+Keep images/ and the existing Git repository metadata. Preserve separately changed
+live supabase-config.js in both root/public. Commit and Push origin.
+Cloudflare Build: npm run build. Deploy: npx wrangler deploy. Root: /.
+Deploy newest commit and verify /version.json shows V87.
+No SQL or database migration/reset is needed. No server data was changed while building.
+Existing Android APK remains V86; this package updates the web project only.

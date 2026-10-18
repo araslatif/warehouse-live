@@ -1,0 +1,84 @@
+ARAM Warehouse V91 — imported CSV market lists
+
+UPGRADE
+Export a full backup and finish sync. Install APK91 OVER the current APK; do not
+uninstall or clear app/browser storage. Copy web ZIP contents to your actual GitHub
+repository root, preserving images/ and any separately changed live database config
+in BOTH root/public/supabase-config.js locations. Commit + Push.
+Cloudflare build: npm run build. Deploy: npx wrangler deploy. Root: /.
+Check /version.json for V91. No SQL/reset/import scripts are needed for this update.
+Use V91 on editing clients to retain the new csvMarketLists91 shared-state field.
+
+YOUR ATTACHMENT
+Bruska invoice Total-0.csv contains 48 headings and ZERO data rows. It cannot populate
+a market list. The importer supports its format, but a populated export is required.
+The exact empty header template is preserved at tests/fixtures/invoice-headers.csv.
+No example/synthetic markets are seeded into your database by this release.
+
+IMPORT
+Open the new CSV navigation page > Import CSV. Choose a populated file.
+Give the list a name. Select market Code, Name, optional Address and source Date.
+Duplicate headings are identified by their 1-based column numbers. In the uploaded
+schema, the two بازرگان columns are suggested as code/name; verify the preview since
+this header-only sample cannot establish what the actual row values will contain.
+At least Code or Name is required. Quoted commas/newlines, escaped quotes, BOM,
+semicolon/tab delimiters and original zero values are supported. Limit10 MiB,
+30000 rows,200 columns, also subject to available local/server sync capacity.
+Preview shows matched/unmatched records. Save creates a separate shared list;
+it does NOT assign, load, move, delete or automatically create directory markets.
+The exact same file/mapping selects the existing active list instead of duplicating it.
+
+MATCHING AND FULL INFORMATION
+Matching uses an exact code first, or exact name when no code was selected.
+Ambiguous codes do not silently choose a market. Unmatched rows remain in the list
+with unknown warehouse status; use Link to market to explicitly select a database
+market, or New market if your existing permissions allow it. Original CSV data stays.
+Repeated invoices for one market appear as one card with its record count. Open the
+card details to see every source row and every original column, including duplicated
+headings. Actions use the app's market-level state, not independent invoice statuses.
+The page contains only the selected CSV list, not the rest of the market directory.
+
+LIVE MANAGEMENT
+Cards show live zones/original indexes, loaded/not loaded status, driver memberships,
+assigners, loader/checker and uploader names. Details include related retained activity
+users and all original source fields. Search code/name, user or any CSV field using
+multiple words; filter status/unmatched and sort code/name/source order.
+Linked markets support the existing authorized load/undo, driver transfer, zone
+assignment/supplement, per-zone removal and missing-item/detail tools. A loader can
+use the V90 quick-driver buttons directly on the CSV page. These are REAL warehouse
+actions and affect the shared market as they do on other pages.
+Zone removal uses the existing ownership rule: an assigner can remove its own entry,
+not another person's entry. Loading and driver transfer permissions remain enforced.
+Loaded markets must be undone before a new zone assignment. Repeated placement uses
+an explicit Supplement confirmation. Unmatched markets must be linked/created first.
+
+LIST-ONLY MANAGEMENT
+Importers can rename, archive or hide entries in their own CSV lists; users with
+driver-management rights and superadmin can manage other lists. These actions do
+NOT unset zones, remove driver memberships or alter loading status.
+Hide selected is reversible: Show removed > select entirely hidden cards > Restore.
+Show archived lists allows restoring a hidden list. Original rows remain stored.
+Select all covers all matching markets, including results beyond the first100 cards.
+
+EXPORT / BACKUP / CONTROL
+CSV/PDF opens the existing customizable report dialog with this list as a source.
+Choose all, matching or selected records. Source-list name, row count and CSV date
+are additional available report columns. Warehouse dates/status are live values;
+CSV dates and other source fields are retained without reinterpretation.
+All original CSV fields exports the original columns plus live market information.
+Formula-looking CSV cells are escaped on export. Import does not evaluate formulas.
+Full/scoped backups now include an Imported CSV lists section. Restore can add missing
+lists or update matching lists by ID while keeping unrelated lists. Original image
+files still need to be kept separately, as in the V89 backup guide.
+Superadmin can show/hide the new page, import, list management, original-field access,
+and report columns per role/device. General viewers are read-only by default;
+actions appear only when their existing action permissions allow them.
+
+VERIFICATION
+Mock-server tests use the actual header-only attachment plus synthetic fixtures.
+They cover mapping, quotes/newlines/zero values, raw preservation, empty-file rejection,
+duplicate imports, live status/users, exact/ambiguous matches, manual linking, selection,
+list-only hide/restore, load/undo, dispatcher transfer, assignment/zone removal, exports,
+CSV-list backups, server reload, role/page/raw-field restrictions and prior features.
+No live user/server data was changed while building. Same APK signing key and all6186
+product image files retained. No physical Android device UI test was available.

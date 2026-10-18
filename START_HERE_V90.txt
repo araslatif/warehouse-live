@@ -1,0 +1,55 @@
+ARAM Warehouse V90 — dispatcher quick drivers
+
+UPGRADE
+Export a full backup and finish sync. Install APK90 OVER the current app; do not
+uninstall or clear storage. Copy web ZIP contents directly into repository root,
+preserving images/ and any separately modified live supabase-config.js in BOTH
+root/public. Commit + Push. Cloudflare build npm run build, deploy npx wrangler deploy,
+root /. Check /version.json for V90. No SQL/import/reset is required.
+
+DISPATCHER / باربەڕێکەر
+A horizontal row replaces the driver dropdown. The first three drivers are shown
+initially. + Driver opens a checklist of existing drivers; choose shortcuts and Save.
+Actual new global drivers are created using the existing authorized driver tools.
+One shortcut is active at a time, highlighted violet. Tap another to switch rapidly.
+Tap the same driver again or Auto to clear selection. Buttons scroll horizontally.
+Shortcuts and selection are remembered locally on this browser/device. Shared load
+records and transfers still synchronize to the server. Old loading sessions do not
+override Auto mode.
+
+LOAD RULES
+- Selected driver: load for that driver, adding membership if absent.
+- Existing membership under other drivers: Kurdish confirmation names those drivers
+  and the selected destination. Confirm transfers membership and loads in ONE queued
+  action; Cancel changes nothing. Unrelated markets stay in their lists.
+- Auto and an existing owner: use that driver without a driver chooser. If several
+  lists contain it, use the first owner in saved driver order and keep other owners.
+  Explicit selection and confirmation can consolidate it into the selected list.
+- Auto and no owner: choose a driver or Without driver for this market only. The
+  next unowned market asks again. Cancel changes nothing.
+- Without driver stores blank driver_id/name plus an unassigned marker. It never
+  creates a fake driver or adds membership to a driver's list.
+- Successful loading clears search and shows Loaded for <name> or Loaded without
+  a driver. Attribution is saved with the server loading record and activity.
+- Undo restores captured zones as before, but does not move membership back to the
+  previous driver. Explicit selection remains until changed or cleared.
+- Existing confirmation for markets not placed in any zone remains.
+
+PERMISSIONS
+Dispatcher role + load permission are required. Superadmin can control Dispatcher
+quick buttons, Transfer while loading and Load without driver independently.
+Disabled transfer denies the actual operation. Other roles retain their loading flow.
+
+HISTORY / BACKUP
+All V89 backups, restore, report design and historical snapshots remain. Loaded
+historical rows retain captured zone/index and correct unnamed-driver status.
+Keep editing clients at V89+ to preserve history fields. Read START_HERE_V89.txt.
+JSON backups do not embed original product image binaries; keep images/ separately.
+
+VERIFICATION
+Mock-server tests cover shortcut selection/editing/reload, automatic driver matching,
+stale session isolation, conflict cancellation/confirmation, atomic transfer+load,
+undo and repeated load, named/unnamed choices, offline retry, storage failure and
+permissions. Loading, dispatch, backup/report and native bridge/Back regressions
+checked. No live user/database data was modified. All6186 images remain bundled.
+No physical Android device UI test was available.

@@ -1,0 +1,24 @@
+ARAM Warehouse V94 — compact sidebar console and market design
+
+The admin/superadmin console uses a dark settings layout with orange accents, small fonts, a fixed sidebar, a scrolling content panel and a visible Close/Apply footer. The same design is included in both web and APK.
+
+SIDEBAR
+Overview: current statistics and shortcuts.
+Users & devices: existing search, role/online filters, photos, device details, user actions and individual exports.
+Appearance (superadmin): role/device appearance controls. Target selection is retained; edits remain drafts until Apply.
+App controls (superadmin): all existing permissions, page/field/button controls, passwords, profile presets, temporary grants, role creation and control search. Permission groups start collapsed to reduce scrolling. Searching still opens matching groups.
+Reports: existing report filters, columns, PDF design, Excel/PDF/share options.
+Backup & export: original backup, restore, recovery and directory/item export/import tools.
+Maintenance (superadmin): original data maintenance actions and confirmations.
+
+Existing nodes/IDs/handlers were retained. The footer SAVE & APPLY button invokes the original server Apply action. Moving between tabs keeps unsaved role/device drafts. Regular admins retain their existing permissions and cannot edit user identity or superadmin settings. The original panel Close button, Escape and Back close the panel normally.
+
+MAIN APP
+Market cards use clearer wrapping names, smaller supporting information, restrained borders/shadows and more usable action spacing. Existing density/font/radius preferences remain effective. Loaded/violet, missing/red, completed/green, exact-match colours, repeated-market frames and original zone indices are preserved. Driver list controls are slightly easier to tap; V92 multi-driver columns remain compact and independent.
+
+SAFE UPGRADE
+Install APK 94.0 over the existing app; do not uninstall or clear its storage.
+Extract the GitHub ZIP contents into the repository root. Preserve your images folder and database configuration. Commit and push; build with npm run build and deploy with npx wrangler deploy. No SQL import, migration or data reset is needed. The private Android source includes signing material; do not upload it to a public repository.
+
+VALIDATION
+Mock-server tests cover preserved console nodes/handlers, tab navigation, appearance draft retention, Apply forwarding, control search, admin restrictions and unchanged records. Existing control/export, backup, modal navigation and multi-driver tests were run. Chromium layout was checked at 360/393px and desktop width without horizontal console overflow. Native/web HTML parity, signature and 6,186 existing images are verified. A physical Android device was not available for testing. No live database data was changed during development.

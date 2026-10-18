@@ -1,0 +1,18 @@
+COMPLETE V95 GITHUB PROJECT — NO PRODUCT IMAGES
+
+All cumulative web features through V95 are included. Application HTML matches APK 95.0 after removal of its Android-only bridge. Browser/device role permissions remain enforced. Native Android background services are not browser capabilities.
+
+1. Extract this ZIP.
+2. Using GitHub Desktop > Repository > Show in Explorer, copy the CONTENTS into the repository root and replace the application files. Do not upload the ZIP file itself or nest the extracted folder inside another folder.
+3. KEEP your existing images directory. No product images are included here.
+4. Keep your current Supabase configuration if changed separately; keep root and public/supabase-config.js consistent. No SQL import or database reset is needed.
+5. Commit and Push origin. Wait for Cloudflare's deployment to succeed.
+
+Cloudflare repository root: / (or empty for root)
+Build command: npm run build
+Deploy command: npx wrangler deploy
+Included Wrangler configuration serves dist. Build copies public files and your retained root images folder into dist.
+
+After deployment, open /version.json?check=V95NOIMAGES and confirm package V95-FULL-GITHUB-NO-IMAGES. If an old version appears, your link is still serving an older deployment. If V95 appears but controls differ from the APK, check the browser device's role and permissions.
+
+All root/public/dist application HTML copies are identical. Fonts, vendor libraries, product catalog, CSV files, tests, build and deployment files are included. The product images folder and private Android files are omitted.

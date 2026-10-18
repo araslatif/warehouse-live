@@ -1,6 +1,8 @@
 {
   "name": "aram-warehouse-web",
-  "version": "86.0.0",
+  "version": "95.0.0",
   "private": true,
-  "scripts": {"build":"node build.mjs"}
+  "scripts": {
+    "build": "node build.mjs"
+  }
 }

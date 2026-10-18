@@ -1,0 +1,77 @@
+ARAM Warehouse V89 — backup, restore and historical reporting
+
+UPGRADE
+Export a full backup of your current data first. Finish pending sync. Install APK89
+OVER the current APK, never uninstall or clear storage. Replace web project contents
+in the actual GitHub repository root, keeping images/ and any separately modified
+live supabase-config.js in both root/public. Commit + Push. Cloudflare build command
+npm run build, deploy npx wrangler deploy, root /. Check /version.json for V89.
+Update all editing devices and the web together: older releases do not retain the
+new reportArchive89 field. No SQL setup/import/reset/migration is needed.
+
+BACKUP (superadmin)
+Export Backup now opens a customization dialog. Complete selects all sections.
+Choose placements/zones, driver memberships, market directory, loading records,
+missing/completed checks, products, users/photos/locks, UI/permissions, retained
+history + snapshots, or recycle bin. Optionally select a driver or a zone. Preview
+shows counts. The JSON has a selected-section manifest and SHA-256 integrity check.
+Pending local changes are reflected in the snapshot and noted; finish sync first
+for a consistent shared/server backup. Pending actions are not replayed by restore.
+Original bundled product image FILES are not embedded in JSON; keep images/ and
+original source assets separately. User photos stored in profiles are included
+when Users is selected. Downloaded files contain private profile/security data
+when those sections are selected; keep your full backups private.
+
+RESTORE (superadmin)
+Import a backup to validate and preview it first. V3 scoped and previous backup
+formats are accepted. Choose the sections to restore (only available sections are
+shown), optionally one driver/zone. User/permission restoration is OFF initially.
+Add missing only preserves existing matching records. Update matching + add missing
+updates matching records but never deletes unrelated current records. History and
+saved lists always merge by identity. No automatic whole-database replacement.
+Finish pending sync before restoring. A full recovery copy is stored locally before
+any queued mutation; if it cannot be stored, restore stops. The five latest recovery
+copies are retained on that device; Recovery downloads the latest. They are local,
+not an independent off-device backup. Save JSON backups elsewhere too.
+A queued restore uses the existing sync/retry path. Red sync means pending; wait for
+green before closing, and inspect the changed section. Damaged JSON is rejected.
+
+REPORTS / PDF AND CSV
+Open CSV/PDF on the relevant list. Existing all/selected/search scopes remain.
+Choose sources including drivers, zones, assigners, all activity, products, current
+placements or Saved historical lists. Date/time filters use Baghdad dates/times.
+Search all row fields, filter activity type, status, columns and column order.
+For historical lists choose driver/placed scope and a specific saved timestamp,
+or a date range and before/after/saved phase. All snapshots shows repeated versions;
+select one timestamp for an exact list at that recorded moment.
+Simple large preset: name/code only, 18pt portrait. Driver sheet: 14pt with list
+index, name/code, zone and zone index. Detailed preset: more columns, 10pt.
+Choose paper/orientation, 8–28pt body font, per-column font up to32pt, relative
+column width weights1–10, 12–36pt title, margins5–25mm, padding1–6mm, color,
+striped/grid/plain, notes, metadata and page numbers. Preview reflects columns and
+font/spacing; actual pagination is in generated PDF. Save/load presets per list.
+CSV contains data and column choices; PDF styling does not apply to CSV.
+
+HISTORICAL DRIVER LISTS
+Current driver lists can be changed without changing older saved list snapshots.
+On V89 operations, changed driver and placed lists get before/after snapshots,
+including order, code/name, zone/index, assigner, loading and missing status.
+A daily baseline is saved while an authorized V89 app is open; manual Save list
+for history buttons are also provided on driver/placed lists. Sync must complete
+for other devices to see them. No silent history trimming was added.
+Collection begins with V89. Unknown earlier lists cannot be reconstructed; earlier
+assignment/activity logs and old backups remain usable. The app cannot capture days
+when no authorized V89 client is open or edits made solely by old versions.
+The retained activity/assignment archives are also included in History backups.
+Retained history increases database/backup size. Keep regular external backups;
+large restores depend on available browser/device storage and server capacity.
+Report snapshots store data rows, not binary images or the entire runtime state.
+
+VALIDATION
+Mock-server tests cover full/scoped checksums, tamper rejection, selective merge,
+update matching, recovery failure protection, immutable historical lists, daily
+baseline deduplication, server reload, permissions, filters, PDF and presets.
+Large-font PDF was rendered and inspected. Existing loading, selection, removal,
+legacy backups and report regression tests passed. No live database was changed.
+APK signature remains compatible with previous releases; all6186 images retained.
+No physical Android device UI test was available.
