@@ -1,0 +1,2 @@
+V96.2: compact zone cards; Before action at physical left; per-placement assigner, date/time, driver/loading metadata. Preserves all V96.1 features and English centered supplementary zone numbers.
+Replace root AND public files. Preserve images/ and production supabase-config.js. Build npm run build, deploy npx wrangler deploy. No SQL or database reset.

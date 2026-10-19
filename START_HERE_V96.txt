@@ -1,0 +1,4 @@
+V96: cumulative V95 + zone pallet grouping/cross-zone badges, long-press selection, photo editor stacking/initial visibility, local zone memory, temporary admin role return, loader multiple-driver access, compact CSV cards, admin-only CSV imports, single driver search and index policy.
+Products: All words / Any word / Exact / Phrase supported in advanced search.
+Replace web files at repository root, preserve images/ and your production supabase-config.js (root/public). Build npm run build. Deploy npx wrangler deploy. Do not run setup SQL or restore an empty backup. No database migration/reset is required.
+Superadmin control panel: search for ژمارەی شوێن to hide/show card position indices; assigning-page indices remain visible.

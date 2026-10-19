@@ -1,0 +1,3 @@
+V97: numeric keypad by default; role/device keypad toggle; explicit Zone + Add toggle; improved visibility enforcement; Assigner quick controls; Pick from app to identify an exact control; bulk stage matching element overrides; device override diagnostics.
+Superadmin > App controls > Target Role > Assigner: Zone + Add Off; Numeric keypad On; Apply. Device overrides take priority and are listed.
+Preserve images/ and production supabase-config.js. Replace root and public files. Build npm run build; deploy npx wrangler deploy. No SQL/database reset.

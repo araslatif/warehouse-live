@@ -1,6 +1,6 @@
 {
-  "build": "V95",
-  "apk": "95.0",
+  "build": "V97",
+  "apk": "97.0",
   "features": [
     "driver-load-permissions",
     "durable-role-locks",
@@ -24,10 +24,17 @@
     "compact-sidebar-admin-console",
     "refined-market-cards",
     "assigner-repeat-tap-confirmation",
-    "pallet-count-group-frame"
+    "pallet-count-group-frame",
+    "numeric-keypad-policy",
+    "zone-add-button-policy",
+    "pick-app-control",
+    "hard-policy-visibility",
+    "quick-assigner-controls",
+    "device-override-diagnostics"
   ],
-  "package": "V95-FULL-GITHUB-NO-IMAGES",
-  "webHtmlSha256": "2a830fe346054119a511c6c39e2633ec6fde61ccd0ece77c0401a094524fc1d5",
+  "package": "V97-COMPLETE-GITHUB-NO-IMAGES",
+  "webHtmlSha256": "c2c47ba2a80ee77615b12c28b26399ec95bfe23cf639a9265a9ae79cbab0dced",
   "productImageCount": 6186,
-  "imagesIncluded": false
+  "imagesIncluded": false,
+  "htmlSha256": "c2c47ba2a80ee77615b12c28b26399ec95bfe23cf639a9265a9ae79cbab0dced"
 }

@@ -1,0 +1,2 @@
+V96.1: Supplementary zone badges use English digits, centered horizontally and vertically. All V96 features retained.
+Extract into the repository root and replace included files AND public folder files. Preserve images/ and production supabase-config.js. Build npm run build; deploy npx wrangler deploy. No database changes.
