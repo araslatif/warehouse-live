@@ -1,6 +1,6 @@
 {
-  "build": "V95",
-  "apk": "95.0",
+  "build": "V96",
+  "apk": "96.0",
   "features": [
     "driver-load-permissions",
     "durable-role-locks",
@@ -26,8 +26,9 @@
     "assigner-repeat-tap-confirmation",
     "pallet-count-group-frame"
   ],
-  "package": "V95-FULL-GITHUB-NO-IMAGES",
+  "package": "V96-COMPLETE-GITHUB-NO-IMAGES",
   "webHtmlSha256": "2a830fe346054119a511c6c39e2633ec6fde61ccd0ece77c0401a094524fc1d5",
   "productImageCount": 6186,
-  "imagesIncluded": false
+  "imagesIncluded": false,
+  "htmlSha256": "4b18a001ad9625fe13a3204d2707eba53cdb3b26f7baa272e54db3876627270a"
 }
