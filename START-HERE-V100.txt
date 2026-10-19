@@ -1,0 +1,70 @@
+V100 — INCREMENTAL SYNC — EXISTING LIVE DATABASE
+
+This is an upgrade, NOT a data import. Your live records and pending edits must
+be kept. Do not reset the database, repeat the old import, clear browser storage,
+or uninstall the existing APK.
+
+ORDER
+1. Temporarily close warehouse website tabs on other devices. Force-stop older
+   APKs to stop their background full-snapshot requests (keep app data intact).
+2. Open the NEW Supabase project gtdcyiunzpenvkwqgxga -> SQL Editor -> New query.
+   Open ENABLE_INCREMENTAL_SYNC_V100.sql in Notepad. Copy the entire script and
+   Run it. It is about 11 KB, not the oversized backup SQL. It builds page caches
+   from the CURRENT live warehouse_state row, adds incremental sync functions
+   and a projection trigger. It does NOT replace the live snapshot or revision.
+   Wait for a revision/sections result. If it fails, stop and send its exact error.
+   Do not repeatedly restart the server or restore a backup over the live data.
+3. Extract warehouse-V100-GitHub-NO-IMAGES.zip into your existing GitHub repository.
+   Replace app files, KEEP your root images/ directory. Commit and Push. Wait for
+   Cloudflare deployment success. Build: npm run build. Deploy: npx wrangler deploy.
+   Assets directory ./dist. package.json and wrangler.jsonc stay at repo root.
+4. Install ARAM-Warehouse-100.0.apk OVER the existing APK on every APK device.
+   It has the same package and signing certificate and a higher version code.
+5. Open one V100 client first. Check /version.json says V100. Let the first paged
+   download finish: it retrieves the complete dataset once in small requests.
+   Existing V98/V99 pending operation IDs remain in their durable queue and retry.
+6. Make ONE small edit; wait for green. Then open a second V100 client and verify
+   it appears. Update all devices before resuming normal use.
+   Public link remains https://warehouse-live.araslatif1.workers.dev/.
+
+HOW SYNC CHANGED
+- Two-second revision checks read a small manifest rather than the full JSON blob.
+- Full state is stored as checksummed pages; only missing/changed pages download.
+- Ordinary saves send a revision-guarded JSON patch, not the complete snapshot.
+- Very large patches use checksummed staged uploads and one atomic final commit.
+- Operation IDs are acknowledged in the SAME transaction as the state update.
+  A timed-out response can be retried without applying an edit twice.
+- The original warehouse_state remains the authority. Updates from old clients
+  also update the page cache, but older clients still generate heavy requests.
+- Realtime uses small revision broadcasts; two-second polling remains fallback.
+- Android background receiving also uses persistent page caches and small reads.
+- Products, profiles, photos, reports, all history and original indices are kept.
+  No archived data was trimmed to reduce the response size.
+- V99 IndexedDB cache storage and safe legacy migration remain included.
+
+LOCAL VERIFICATION (NO WRITES TO YOUR REAL DATABASE BY THE ASSISTANT)
+- Your full uploaded backup reassembled exactly from pages, with setup leaving
+  its original snapshot and revision unchanged.
+- A small assignment uploaded 246 bytes; the next client fetched ~27 KB rather
+  than re-reading the ~12 MB dataset. This is a local test, not a live benchmark.
+- Revision conflicts, operation receipts, staged large Unicode patches, and
+  updates originating from older clients passed PostgreSQL tests.
+- Two full mocked app instances saved and automatically received an assignment.
+- A preexisting unsent edit survived reload and was acknowledged exactly once.
+- Mid-read revision changes retried instead of applying an inconsistent snapshot.
+- Existing keypad, authoritative hiding, policy permissions and picker tests passed.
+- Cache quota/migration tests, web/public/dist/native HTML parity and APK signing
+  passed. Android code compiled; actual-device background behaviour still needs
+  verification after this upgrade is installed.
+
+DIAGNOSTICS
+In the browser Console, this read-only expression shows progress:
+ window.warehouseSyncStatus100
+For queue status:
+ ({revision,pending:pendingWarehouseActions.length,saving:pendingFlushBusy,error:lastServerSyncError})
+Never clear pending actions to make the button green. If the database itself is
+unresponsive even for SELECT 1, recover the database while older app instances
+are stopped before applying this upgrade.
+
+The Android source ZIP contains signing keys and embedded product images; keep
+it PRIVATE. The GitHub ZIP contains no real backup and no product image folder.
