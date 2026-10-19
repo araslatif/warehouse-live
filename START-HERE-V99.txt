@@ -1,0 +1,42 @@
+V99 — LOCAL STORAGE QUOTA FIX + LARGE SYNC TIMEOUT
+
+Your real database has already been imported. Do NOT repeat an import or reset.
+Keep the existing APK installed. Do not clear browser/site/app storage.
+
+1. Run FIX99-SYNC-TIMEOUT.sql in NEW Supabase project gtdcyiunzpenvkwqgxga
+   SQL Editor. It changes the timeout of two existing sync functions to 60s.
+   It does not change records, roles, passwords, assignments, profiles or revision.
+2. Extract warehouse-V99-GitHub-NO-IMAGES.zip into your existing GitHub repository.
+   Replace files, preserve images/. Commit and Push. Wait for Cloudflare success.
+   Build npm run build; deploy npx wrangler deploy; assets directory ./dist.
+3. Reload the website on both devices after deployment. version.json should say V99.
+   The old local snapshot is moved to IndexedDB before its localStorage copy is
+   removed. Pending action queue, device ID, role choices and zone preferences
+   are kept. Cache databases are separated by backend URL.
+4. Install ARAM-Warehouse-99.0.apk OVER the old APK, on every phone using the APK.
+   It uses the same package and signing identity; do NOT uninstall the old app.
+5. Make one small change. Let the sync request finish (up to 60 seconds on a slow
+   connection). Check another device. Red remains pending, green confirms sync.
+   If it stays red, send the console line 'Server save pending' and any failed
+   request status. A cache fix alone cannot prove that server writes succeeded.
+
+FIX DETAILS
+Full snapshots and the market directory now use IndexedDB rather than the small
+localStorage quota. Pending actions remain in their existing durable queue.
+Legacy cache removal happens only after a successful IndexedDB write; failed
+cache migration retains the old copy. Cache storage failures do not delete the
+queue or stop server sync. Requests for full state/large writes allow 60 seconds;
+revision-only probes retain a shorter timeout. Two-second revision checks remain.
+All products and reports remain in the full snapshot; no data was trimmed.
+
+VERIFICATION
+An 8 MB cache beyond localStorage quota was saved/reloaded in IndexedDB; pending
+queue/device identity preserved; safe legacy migration and failed-storage paths;
+market directory persistence; existing full-DOM keypad/policy smoke test;
+SQL timeout patch tested against local PostgreSQL with records/revision unchanged;
+web/public/dist/native HTML parity; APK signature and 6186 embedded images.
+No mutation of the real server was performed by the assistant. Verify real
+cross-device synchronization after applying the SQL and client updates.
+
+Keep Android source ZIP private: it includes signing keys. Product images are
+not included in the GitHub ZIP; retain your existing root images/ directory.

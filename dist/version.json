@@ -1,6 +1,6 @@
 {
-  "build": "V98",
-  "apk": "98.0",
+  "build": "V99",
+  "apk": "99.0",
   "features": [
     "driver-load-permissions",
     "durable-role-locks",
@@ -33,11 +33,14 @@
     "device-override-diagnostics",
     "new-backend-98",
     "revision-first-background-refresh",
-    "local-migration-recovery"
+    "local-migration-recovery",
+    "indexeddb-full-state-cache",
+    "legacy-cache-migration",
+    "large-snapshot-timeout"
   ],
-  "package": "V98-COMPLETE-GITHUB-NO-IMAGES",
-  "webHtmlSha256": "a210d6a6065dc335fca31e14deae0ede3dd8bda7410dff654854c4a76f188195",
+  "package": "V99-COMPLETE-GITHUB-NO-IMAGES",
+  "webHtmlSha256": "796e9c7ddaed424da7fbf3dccae147a88d8cef1fb597d310eb07fc5ea9339d99",
   "productImageCount": 6186,
   "imagesIncluded": false,
-  "htmlSha256": "a210d6a6065dc335fca31e14deae0ede3dd8bda7410dff654854c4a76f188195"
+  "htmlSha256": "796e9c7ddaed424da7fbf3dccae147a88d8cef1fb597d310eb07fc5ea9339d99"
 }
