@@ -1,5 +1,11 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const html=fs.readFileSync(require('path').join(__dirname,'../public/index.html'),'utf8');
+const categoryStart=html.indexOf('function syncErrorCategory100('),categoryEnd=html.indexOf('\n',categoryStart);
+assert(categoryStart>=0&&categoryEnd>categoryStart,'sync error classifier was not found');
+const classifier={};vm.createContext(classifier);vm.runInContext(html.slice(categoryStart,categoryEnd),classifier);
+assert.equal(classifier.syncErrorCategory100({code:'55P03',message:'canceling statement due to lock timeout'}),'server-failed');
+assert.equal(classifier.syncErrorCategory100({code:'57014',message:'canceling statement due to statement timeout'}),'server-failed');
+assert.equal(classifier.syncErrorCategory100({name:'AbortError',message:'Database request timed out'}),'transport-ambiguous');
 const start=html.indexOf('function flushPendingWarehouseActions(){'),end=html.indexOf('\nasync function unsetAllZoneMarkets',start);
 assert(start>=0&&end>start,'authoritative sync queue function was not found');
 async function run({persist=true,readError=false,applied=[]}={}){
@@ -13,5 +19,5 @@ async function run({persist=true,readError=false,applied=[]}={}){
  const failedPersist=await run({persist:false});assert.equal(failedPersist.result,false);assert.equal(failedPersist.c.pendingFlushBusy,false);assert.equal(failedPersist.c.pendingWarehouseActions.length,1);assert(failedPersist.diagnostics.some(x=>x.acknowledgement==='confirmed-queue-retained'));
  const transportFailure=await run({readError:true});assert.equal(transportFailure.result,false);assert.equal(transportFailure.c.pendingFlushBusy,false);assert.equal(transportFailure.c.pendingWarehouseActions.length,1);
  const receiptRetry=await run({persist:true,applied:['pending_test_only']});assert.equal(receiptRetry.result,true);assert.equal(receiptRetry.c.pendingFlushBusy,false);assert.equal(receiptRetry.c.pendingWarehouseActions.length,0);assert(receiptRetry.diagnostics.some(x=>x.acknowledgement==='receipt-confirmed'));
- console.log(JSON.stringify({PASS:true,acknowledgedQueueRetainedWhenPersistenceFails:true,busyFlagClearsAfterTransportError:true,receiptRetryDrainsSameOperation:true,operationPayloadsExcludedFromDiagnostics:true}));
+ console.log(JSON.stringify({PASS:true,explicitPostgresLockAndStatementTimeoutsClassifiedAsFailed:true,networkAbortClassifiedAsAmbiguous:true,acknowledgedQueueRetainedWhenPersistenceFails:true,busyFlagClearsAfterTransportError:true,receiptRetryDrainsSameOperation:true,operationPayloadsExcludedFromDiagnostics:true}));
 })().catch(e=>{console.error(e);process.exitCode=1});
