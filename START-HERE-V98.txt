@@ -1,0 +1,41 @@
+V98 — NEW SUPABASE MIGRATION — READ IN THIS ORDER
+
+1. Keep the existing APK installed. Do NOT uninstall it or clear browser/app data.
+2. Pause changes on all devices while migrating. This import is the backup exported
+   2026-10-19 14:54 UTC (17:54 Baghdad). Changes made later are not included.
+   The backup says 65 pending operations; its state already reflects them, but it
+   does not contain operation IDs. V98 archives old device queues rather than
+   replaying them twice. Later edits from other devices need reconciliation.
+3. Obtain your separate PRIVATE-DATABASE-IMPORT-V98.zip. Open IMPORT-REAL-DATA-PRIVATE.sql
+   in a text editor and copy its ENTIRE contents into a new Supabase SQL Editor
+   query on project gtdcyiunzpenvkwqgxga ONLY. Run once. This is a large (~13 MB)
+   query: allow time for it to load. If the editor rejects it, stop and send the
+   exact error; do not run fragments or reset the database.
+   The transaction refuses to overwrite existing placements or user profiles.
+   Expected final results: placements 117, drivers 11, products 6953,
+   migration new-supabase-20261019-98. Do not proceed if the query fails.
+4. After confirming those results, extract warehouse-V98-GitHub-NO-IMAGES.zip
+   into your existing GitHub Desktop repository. Replace files, retain images/.
+   package.json and wrangler.jsonc must be at the repository root. Commit and Push.
+   Cloudflare: build npm run build; deploy npx wrangler deploy; assets ./dist.
+5. Install ARAM-Warehouse-98.0.apk OVER the existing app (same signing identity).
+   The web and APK now use the same app HTML and new database configuration.
+6. Test one change on one device and verify it on another; then resume work.
+
+NO real records, profiles, private import SQL, backups, or Android signing keys
+are included in the GitHub ZIP. Never upload the private import ZIP to GitHub.
+The Android source ZIP is private and contains signing material; keep private.
+Product pictures stay in your existing GitHub images/ folder; APK includes 6186.
+
+Verified: backup SHA-256; new-project read access; web build; migration recovery
+storage tests; revision-only receive tests; existing keypad/policy smoke test;
+APK signature and web/native HTML parity. The data import has NOT been run by
+this assistant. Real end-to-end sync must be checked after your import/deployment.
+
+Sync: 2-second revision checks download the full state only when changed.
+Large shared snapshots are still sent on writes; this does not remove free-plan
+limits. Realtime notifications remain enabled, with polling as fallback.
+Local pre-migration queue/cache recovery is retained in IndexedDB database
+warehouse_backend_recovery98, snapshots store, before-new-supabase-20261019.
+Device identity and role preferences are retained. A native cache from the old
+backend is cleared; the server records and local recovery copy are not deleted.
